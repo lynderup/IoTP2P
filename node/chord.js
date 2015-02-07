@@ -90,6 +90,37 @@ var update_finger_table = function(s, i) {
     }
 };
 
+var join = function(node) {
+  predecessor = nil;
+  successor = node.find_successor();
+};
+
+// Periodically verify this nodes immediate successor,
+// and tell it about this node
+var stabelize = function() {
+  var x = successor.predecessor;
+  if (x $\in$ [this, successor]) {
+    successor = x;
+  }
+
+  successor.notify(this);
+};
+
+// node might be our predecessor
+var notify = function(node) {
+  // remember null and undefined is falsy, original code says: predecessor = nil
+  if (!predecessor || node $\in$ [predecessor, this]) {
+    predecessor = node;
+  }
+};
+
+// periodically refresh table entries
+var fix_fingers = function() {
+  var i = random index > 1 into finger[];
+  finger[i].node = find_successor(finger[i].start);
+};
+
+
 exports.find_successor = find_successor;
 exports.find_predecessor = find_predecessor;
 exports.closest_preceding_finger = closest_preceding_finger;
