@@ -1,4 +1,7 @@
 var server = require('./server');
 var router = require('./router');
+var chord = require('./chord');
 
-server.start(router.route);
+var handlers['chord'] = chord;
+
+server.start(router.route, handlers);

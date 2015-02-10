@@ -1,4 +1,4 @@
-var route = function(pathname) {
+var route = function(pathname, handlers) {
     console.log("Routing for: " + pathname);
 
     // TODO: Here needs ze work be done
