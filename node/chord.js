@@ -1,8 +1,75 @@
-// TODO the following is only stubs following the pseudo-code from the article, no actual implementation
+var http = require('http');
+var qs = require('querystring');
 
+// TODO Handle callback structure!!!
+var requestTemplate = function(fun, params, data, method) {
+  // Build the post string from an object
+  var post_data = qs.stringify(data);
+
+  // An object of options to indicate where to post to
+  var post_options = {
+    host: '',
+    port: '8888',
+    path: '/chord/' + fun + params,
+    method: method,
+    headers: {
+      'Content-Type': 'application/x-www-form-urlencoded',
+      'Content-Length': post_data.length
+    }
+  };
+
+  // Set up the request
+  var post_req = http.request(post_options, function(res) {
+    res.setEncoding('utf8');
+    res.on('data', function (chunk) {
+      console.log('Response: ' + chunk);
+    });
+  });
+
+  // post the data
+  post_req.write(post_data);
+  post_req.end();
+};
+
+// TODO how to post node?
+var Node = function(id) {
+  this.id = id;
+};
+Node.prototype.find_successor = function(id) {
+  requestTemplate("find_successor", "/id", {}, "GET");
+};
+Node.prototype.find_predecessor = function(id) {
+  requestTemplate("find_predecessor", "/id", {}, "GET");
+};
+Node.prototype.closest_preceding_finger = function(id) {
+  requestTemplate("closest_preceding_finger", "/id", {}, "GET");
+};
+// s is of type node
+Node.prototype.update_finger_table = function(s, i) {
+  requestTemplate("update_finger_table", "", { node: s, index: i}, "POST");
+};
+Node.prototype.notify = function(node) {
+  requestTemplate("notify", "", { node: node }, "POST");
+};
+
+// Stored for reference, shouldn't be needed, seems to be local only
+//Node.prototype.join = function(node) {};
+//Node.prototype.init_finger_table = function(node) {};
+//Node.prototype.update_others = function() {};
+//Node.prototype.join = function(node) {};
+//Node.prototype.stabelize = function() {};
+//Node.prototype.fix_fingers = function() {};
+
+
+// TODO the following is only stubs following the pseudo-code from the article, no actual implementation
 // Note about notation all n is changed to node, so the code is descriptive
 // node.foo() is a remote method/function call (as per spec)
 // node.bar is a remove variable lookup (as per spec)
+
+// Should probably be a list or set
+var successor = finger[0].node; // #define successor finger[1].node
+var finger = [];
+var predecessor;
 
 var find_successor = function(id) {
     var node = find_predecessor(id);
@@ -11,8 +78,8 @@ var find_successor = function(id) {
 
 var find_predecessor = function(id) {
     var node = this; // pseudo-code does: n.find_predecessor(id) { n' = n;....
-    
-    while (id $\notin$ [node,node.successor]) {
+
+    while (id $\notin$ [node, node.successor]) {
 	node = node.closest_preceding_finger(id);
     }
 
@@ -22,14 +89,12 @@ var find_predecessor = function(id) {
 var closest_preceding_finger = function(id) {
     for (var i = m; i>0; i--) {
 	if (finger[i].node $\in$ [this, id]) {
-	    return finger[i].node; // Gade vide hvad hende der modtager finger hedder?
+	    return finger[i].node; // Gad vide hvad hende der modtager finger hedder?
 	}
     }
 
     return this;
 };
-
-var successor = finger[0].node; // #define successor finger[1].node
 
 var join = function(node) {
     if (node) {

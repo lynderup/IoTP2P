@@ -7,8 +7,9 @@ var route = function(pathname, handlers, post, get) {
   if (service && service === "favicon.ico") return { status: 404, message: "No favicon" };
 
   // Handle requests of our type
-  if (pathParts.length === 3) {
+  if (pathParts.length >= 3) {
     var fun = pathParts[2];
+    var params = pathParts.slice(3);
 
     if (service.length === 0) {
       result.status = 404;
@@ -22,7 +23,9 @@ var route = function(pathname, handlers, post, get) {
         var funImpl = serviceImpl[fun];
 
         if (typeof(funImpl) === "function") {
-          result.data = funImpl.call(service, post, get);
+          params.push(post);
+          params.push(get);
+          result.data = funImpl.apply(service, params);
           result.status = 200;
           result.message = "OK";
         } else {
