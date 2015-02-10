@@ -16,9 +16,16 @@ Bonus: Gør jeres ring robust over churn v.hj.a. successorlister.
 ### Gets
 http://www.nodebeginner.org/#javascript-and-nodejs
 
-http://localhost:8888/{method}/{params, fx id}
+http://localhost:8888/{service}/{function} (/{params, fx id}) <- params currently not allowed, unless post or get
 
-Routing, opdeling i filer?
+Routing, opdeling i filer? Ja, skal inkluderes i index og markeres i handler, like this:
+
+```javascript
+var module = require('./module');
+
+var handlers = {};
+handlers['module'] = module;
+```
 
 SQLlite
 
