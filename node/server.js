@@ -1,29 +1,42 @@
 var http = require('http');
 var url = require('url');
+var qs = require('querystring');
 
 var start = function(route, handlers) {
   var onRequest = function(request, response) {
-    var parsedUrl = url.parse(request.url);
+    var parsedUrl = url.parse(request.url, true);
     var pathname = parsedUrl.pathname;
-    
-    response.writeHead(200, {"Content-Type": "text/plain"});
-    response.write("<!DOCTYPE html>");
-    response.write("<html>");
-    response.write("\t<head>");
-    response.write("\t\t<title>dIoT</title>");
-    response.write("\t</head>");
-    response.write("\t<body>");
-    
-    route(pathname, handlers);
 
-    response.write("/t</body>");
-    response.write("</html>");
-    
-    response.end();
+    var post = {};
+    var body = '';
+    request.on('data', function(data) {
+      console.log("data");
+      body += data;
+
+      if (body.length > 1e6) { // Prevent flooding, 1 mb data or more
+        request.connection.destroy();
+      }
+    });
+
+
+    request.on('end', function() {
+      post = qs.parse(body);
+      var result = route(pathname, handlers, post, parsedUrl.query);
+
+      response.writeHead(result.status, {"Content-Type": "application/json"});
+
+      if (result.status === 200) {
+        response.write(JSON.stringify({ data: result.data }));
+      } else {
+        response.write(JSON.stringify({ error: result.message }));
+      }
+      response.write("\n");
+      response.end();
+    });
   };
-  
+
   http.createServer(onRequest).listen(8888);
-  
+
   console.log("Server has started, press C-c to exit");
 };
 
