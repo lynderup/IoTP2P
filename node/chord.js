@@ -1,5 +1,12 @@
 var http = require('http');
 var qs = require('querystring');
+var crypto = require('crypto');
+
+var shasummer = function(data) {
+  var shasum = crypto.createHash('sha256');
+  shasum.update(data);
+  return shasum.digest("hex");
+};
 
 // TODO Handle callback structure!!!
 var requestTemplate = function(fun, params, data, method) {
@@ -36,13 +43,13 @@ var Node = function(id) {
   this.id = id;
 };
 Node.prototype.find_successor = function(id) {
-  requestTemplate("find_successor", "/id", {}, "GET");
+  requestTemplate("find_successor", "/"+id, {}, "GET");
 };
 Node.prototype.find_predecessor = function(id) {
-  requestTemplate("find_predecessor", "/id", {}, "GET");
+  requestTemplate("find_predecessor", "/"+id, {}, "GET");
 };
 Node.prototype.closest_preceding_finger = function(id) {
-  requestTemplate("closest_preceding_finger", "/id", {}, "GET");
+  requestTemplate("closest_preceding_finger", "/"+id, {}, "GET");
 };
 // s is of type node
 Node.prototype.update_finger_table = function(s, i) {
@@ -60,7 +67,6 @@ Node.prototype.notify = function(node) {
 //Node.prototype.stabelize = function() {};
 //Node.prototype.fix_fingers = function() {};
 
-
 // TODO the following is only stubs following the pseudo-code from the article, no actual implementation
 // Note about notation all n is changed to node, so the code is descriptive
 // node.foo() is a remote method/function call (as per spec)
@@ -72,28 +78,30 @@ var finger = [];
 var predecessor;
 
 var find_successor = function(id) {
-    var node = find_predecessor(id);
-    return node.successor;
+  var node = find_predecessor(id);
+  return node.successor;
 };
 
 var find_predecessor = function(id) {
-    var node = this; // pseudo-code does: n.find_predecessor(id) { n' = n;....
+  var node = this;
+  var nodes = this.successor;
+  nodes.push(node);
 
-    while (id $\notin$ [node, node.successor]) {
-	node = node.closest_preceding_finger(id);
-    }
+  while (nodes.indexOf(id) >= 0) {
+    node = node.closest_preceding_finger(id);
+  }
 
-    return node;
+  return node;
 };
 
 var closest_preceding_finger = function(id) {
-    for (var i = m; i>0; i--) {
-	if (finger[i].node $\in$ [this, id]) {
-	    return finger[i].node; // Gad vide hvad hende der modtager finger hedder?
-	}
-    }
+//    for (var i = m; i>0; i--) {
+//	if (finger[i].node $\in$ [this, id]) {
+//	    return finger[i].node; // Gad vide hvad hende der modtager finger hedder?
+//	}
+//   }
 
-    return this;
+//    return this;
 };
 
 var join = function(node) {
@@ -102,12 +110,18 @@ var join = function(node) {
 	update_others();
 	// move keys in (predecessor, node] from successor
     } else {
-	for (var i=0; i<m; i++) {
-	    finger[i].node = node;
-	}
+//	for (var i=0; i<m; i++) {
+//	    finger[i].node = node;
+//	}
 
 	predecessor = node;
     }
+};
+
+// Check this
+var join2 = function(node) {
+  predecessor = null;
+  successor = node.find_successor();
 };
 
 // Good detail from article
@@ -123,17 +137,17 @@ fill the finger table to O(log N ).
 // initialize finger table of local node
 // node is an arbitrary node already in the network
 var init_finger_table = function(node) {
-    finger[0].node = node.find_successor(finger[0].start);
-    successor = predecessor.successor;
-    successor.predecessor = node;
+//    finger[0].node = node.find_successor(finger[0].start);
+//    successor = predecessor.successor;
+//    successor.predecessor = node;
 
-    for (var i=0; i<(m-1); i++) {
-	if (finger[i+1].start $\in$ [this.finger[i].node]) {
-	    finger[i+1].node = finger[i].node;
-	} else {
-	    finger[i+1].node = node.find_successor(finger[i+1].start);
-	}
-    }
+//    for (var i=0; i<(m-1); i++) {
+//	if (finger[i+1].start $\in$ [this.finger[i].node]) {
+//	    finger[i+1].node = finger[i].node;
+//	} else {
+//	    finger[i+1].node = node.find_successor(finger[i+1].start);
+//	}
+//    }
 };
 
 // update all nodes whose finger
@@ -148,23 +162,21 @@ var update_others = function() {
 
 // if s is ith finger of this update this' finger table
 var update_finger_table = function(s, i) {
-    if (s $\in$ [this, finger[i].node]) {
-	finger[i].node = s;
-	p = predecessor; // get first node preceding this
-	p.update_finger_table(s, i);
-    }
-};
-
-var join = function(node) {
-  predecessor = nil;
-  successor = node.find_successor();
+//    if (s $\in$ [this, finger[i].node]) {
+//	finger[i].node = s;
+//	p = predecessor; // get first node preceding this
+//	p.update_finger_table(s, i);
+//    }
 };
 
 // Periodically verify this nodes immediate successor,
 // and tell it about this node
 var stabelize = function() {
   var x = successor.predecessor;
-  if (x $\in$ [this, successor]) {
+  var nodes = successor;
+  nodes.push(this);
+
+  if (nodes.indexOf(x) >= 0) {
     successor = x;
   }
 
@@ -174,15 +186,16 @@ var stabelize = function() {
 // node might be our predecessor
 var notify = function(node) {
   // remember null and undefined is falsy, original code says: predecessor = nil
-  if (!predecessor || node $\in$ [predecessor, this]) {
+  var nodes = [predecessor, this];
+  if (!predecessor || nodes.indexOf(node) >= 0) {
     predecessor = node;
   }
 };
 
 // periodically refresh table entries
 var fix_fingers = function() {
-  var i = random index > 1 into finger[];
-  finger[i].node = find_successor(finger[i].start);
+//  var i = random index > 1 into finger[];
+//  finger[i].node = find_successor(finger[i].start);
 };
 
 
