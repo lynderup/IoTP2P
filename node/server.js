@@ -2,7 +2,9 @@ var http = require('http');
 var url = require('url');
 var qs = require('querystring');
 
-var start = function(route, handlers) {
+var start = function(route, handlers, port) {
+  port = port || 8888;
+
   var onRequest = function(request, response) {
     var parsedUrl = url.parse(request.url, true);
     var pathname = parsedUrl.pathname;
@@ -35,9 +37,7 @@ var start = function(route, handlers) {
     });
   };
 
-  http.createServer(onRequest).listen(8888);
-
-  console.log("Server has started, press C-c to exit");
+  return http.createServer(onRequest).listen(port);
 };
 
 exports.start = start;
