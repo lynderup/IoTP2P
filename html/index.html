@@ -1,1 +1,41 @@
 <!DOCTYPE html>
+<html>
+<head>
+  <title>Page Title</title>
+</head>
+
+<body>
+
+  <h1>This is our awesome chord</h1>
+   
+  <div>Current node :</div>
+  <p>Current node id  = <span id="nodeId">100</span></p>
+  <div class="nodeFingerTable"> 
+  </div>
+  <div>
+<a href="#" id="findPredesessor">Find predesessor</a>	<input type="button" id="findNode" value="Find node" /><input type="text" id="id" placeholder="node id"/> <a href="#" id="findSuccessor">Find successor</a>
+  </div>
+
+</body>
+
+</html>
+
+<script type="text/javaScript">
+	var currentNodeId =	document.getElementById("nodeId");
+	var findPredesessor =	document.getElementById("findPredesessor");
+	var findSuccessor =	document.getElementById("findPredesessor");
+	var findNode = document.getElementById("findNode");
+	var id = document.getElementById("id");
+	var xmlhttp = new XMLHttpRequest();
+	
+	findNode.addEventListener("click", function(){ 
+		
+	xmlhttp.open("GET","ajax_info.txt",false);
+	xmlhttp.send();
+	console.log(xmlhttp); 
+	});
+
+
+	
+	
+</script>

@@ -9,3 +9,5 @@ handlers['test'] = test;
 //handlers['chord'] = new chord.Chord();
 
 server.start(router.route, handlers);
+
+router.route('/', [],"","index");
