@@ -5,6 +5,6 @@ var test = require('./test');
 
 var handlers = {};
 handlers['test'] = test;
-handlers['chord'] = chord;
+//handlers['chord'] = new chord.Chord();
 
 server.start(router.route, handlers);
