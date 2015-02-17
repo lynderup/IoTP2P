@@ -39,6 +39,7 @@ var requestTemplate = function(fun, params, data, method) {
 };
 
 // TODO how to post node?
+// TODO successor should be defined in this I believe
 var Node = function(id) {
   this.id = id;
 };
@@ -74,9 +75,22 @@ Node.prototype.notify = function(node) {
 
 // Should probably be a list or set
 var successor = finger[0].node; // #define successor finger[1].node
+// m bit array where at node n, finger[i] = successor(n+Math.pow(2, i-1))
+// a finger entry contains id + ip:port
+// { start: , interval: , node: } // note node is sometimes referred to as successor in text
+// finger[i].interval = [finger[i].start...finger[i+1].start)
 var finger = [];
 var predecessor;
+var m = 12; // 12 makes k = 4096
+var k = Math.pow(2, m);
+var key = 42;
 
+// Nah, I didn't just accidentally find someone elses implementation
+// https://github.com/optimizely/chord/blob/master/chord.js#L133
+var in_range = function() {
+};
+
+// ID is a node ID
 var find_successor = function(id) {
   var node = find_predecessor(id);
   return node.successor;
@@ -84,24 +98,29 @@ var find_successor = function(id) {
 
 var find_predecessor = function(id) {
   var node = this;
-  var nodes = this.successor;
-  nodes.push(node);
+  // The ID must be the key we're looking for
+  var nodes = [node.successor.key, node.key];
 
+  // Their definition of sets seems to be broken, we may need to fix this
   while (nodes.indexOf(id) >= 0) {
     node = node.closest_preceding_finger(id);
+    nodes = [node.successor.key, node.key];
   }
 
   return node;
 };
 
 var closest_preceding_finger = function(id) {
-//    for (var i = m; i>0; i--) {
-//	if (finger[i].node $\in$ [this, id]) {
-//	    return finger[i].node; // Gad vide hvad hende der modtager finger hedder?
-//	}
-//   }
+  // Again their sets looks broken
+  // I suspect that they intend to look at intervals
+  var nodes = [this.key, id];
+  for (var i = finger.length; i>=0; --i) {
+    if (nodes.indexOf(finger[i].node )) {
+      return finger[i].node;
+    }
+  }
 
-//    return this;
+  return this;
 };
 
 var join = function(node) {
@@ -196,6 +215,10 @@ var notify = function(node) {
 var fix_fingers = function() {
 //  var i = random index > 1 into finger[];
 //  finger[i].node = find_successor(finger[i].start);
+};
+
+// No pseudo code. Yields IP for responsible key (and port?)
+var lookup = function() {
 };
 
 
