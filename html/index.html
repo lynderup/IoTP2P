@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.3/jquery.min.js"></script>
   <title>Page Title</title>
 </head>
 
@@ -10,10 +11,9 @@
    
   <div>Current node :</div>
   <p>Current node id  = <span id="nodeId">100</span></p>
-  <div class="nodeFingerTable"> 
-  </div>
+
   <div>
-<a href="#" id="findPredesessor">Find predesessor</a>	<input type="button" id="findNode" value="Find node" /><input type="text" id="id" placeholder="node id"/> <a href="#" id="findSuccessor">Find successor</a>
+<a href="#" id="findPredesessor">Find predesessor</a>	<input type="button" id="findNode" value="Find node" /><input type="text" id="inputId" placeholder="node id"/> <a href="#" id="findSuccessor">Find successor</a>
   </div>
 
 </body>
@@ -21,20 +21,38 @@
 </html>
 
 <script type="text/javaScript">
-	var currentNodeId =	document.getElementById("nodeId");
-	var findPredesessor =	document.getElementById("findPredesessor");
-	var findSuccessor =	document.getElementById("findPredesessor");
-	var findNode = document.getElementById("findNode");
-	var id = document.getElementById("id");
-	var xmlhttp = new XMLHttpRequest();
-	
-	findNode.addEventListener("click", function(){ 
-		
-	xmlhttp.open("GET","ajax_info.txt",false);
-	xmlhttp.send();
-	console.log(xmlhttp); 
-	});
 
+	var findPredesessor =	$("#findPredesessor");
+	var findSuccessor =	$("#findPredesessor");
+	var findNode = $("#findNode");
+	var inputId = $("#inputId");
+	var nodeId = $("#nodeId");
+	
+	findNode.on("click", function(){ 
+		console.log(inputId.val())
+		if(inputId != ""){
+		//make ajax call to server with id
+		
+		//update Links to nodes and id fields
+		updateData("");
+		}
+	});
+	
+	function updateData(node){
+		
+		findPredesessor.attr("href", node.predesessorLink);
+		findSuccessor.attr("href", node.sucessorLink);
+		nodeId.text(node.id);
+	}
+	
+	findPredesessor.on("click", function(){ 
+		console.log(inputId.val())
+		if(inputId != ""){
+		
+		updateData("");
+		
+		}
+	});
 
 	
 	
