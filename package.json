@@ -1,0 +1,10 @@
+{
+  "name": "inglorious-chord-basterd",
+  "version": "1.0.0",
+  "description": "A simple Chord implementation",
+  "author": "Inglorious Basterds - Kasper Lynderup, Timothi Hansen and Rohde Fischer",
+  "main": "main.js",
+  "dependencies": {
+    "ncurses": ">= 0.4.0"
+  }
+}

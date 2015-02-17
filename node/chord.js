@@ -76,7 +76,7 @@ Node.prototype.notify = function(node) {
 
 
 
-var Chord = funtion() {
+var Chord = function() {
   this.id = 42; // Set this in a sane way
   this.finger = [];
   this.predecessor = null;
@@ -90,7 +90,7 @@ var Chord = funtion() {
   this.m = 42; // Probably hash bit count
   this.k = Math.pow(2, m);
   this.successor = this.finger[0].node;
-}
+};
 
 
 
@@ -230,4 +230,4 @@ Chord.prototype.fix_fingers = function() {
 Chord.prototype.lookup = function() {
 };
 
-exports.chord = Chord;
+exports.Chord = Chord;
