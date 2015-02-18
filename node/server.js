@@ -32,10 +32,6 @@ var start = function(route, handlers, port) {
             //console.log(data);
             route(pathname, handlers, data, function(result) {
 
-                
-                
-			
-				
                 if (result.status === 200) {
 					if(result.ContentType  == "text/html"){
 							response.writeHead(result.status, {"Content-Type": "text/html"})
