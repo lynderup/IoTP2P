@@ -9,6 +9,13 @@ var requestTemplate = function(fun, data, method, ip, port, callback) {
         params = "?"+qs.stringify(data);
     }
 
+    // Build the post string from an object
+    var post_data = JSON.stringify(data);
+    var data_length = 0;
+    if (method == "POST") {
+        data_length = post_data.length;
+    }
+
     // An object of options to indicate where to post to
     var post_options = {
         host: ip,
@@ -17,33 +24,34 @@ var requestTemplate = function(fun, data, method, ip, port, callback) {
         method: method,
         headers: {
             'Content-Type': 'application/json',
-            'Content-Length': post_data.length
+            'Content-Length': data_length
         }
     };
 
     // Set up the request
-    var post_req = http.request(post_options, function(res) {
-                       res.setEncoding('utf8');
-                       var recievedData = "";
-                       res.on('data', function (chunk) {
-                           recievedData += chunk;
-                           console.log('Response: ' + chunk);
-                       });
-                       res.on('end', function() {
-                           if(callback) {
-                               callback(JSON.parse(recievedData).data);
-                           }
-                       });
+    var req = http.request(post_options, function(res) {
+                  res.setEncoding('utf8');
+                       if(callback) {
+                           var recievedData = "";
+                           res.on('data', function (chunk) {
+                               recievedData += chunk;
+                               //console.log('Response: ' + chunk);
+                           });
+                           res.on('end', function() {
+                               callback(JSON.parse(recievedData).data, null);
+                           });
+                       }
                    });
+    req.on('error', function(e) {
+        callback(null, e);
+    })
 
     if (method == "POST") {
-        // Build the post string from an object
-        var post_data = JSON.stringify(data);
 
         // post the data
-        post_req.write(post_data);
+        req.write(post_data);
     }
-    post_req.end();
+    req.end();
 };
 
 var Node = function(ip, port, key) {
@@ -85,15 +93,19 @@ var Node = function(ip, port, key) {
     };
 */
 
-    this.notify = function(node) {
-        requestTemplate("notify", "", { node: nodeToJSON(node) }, "POST", ip, port);
+    this.notify = function(node, callback) {
+        requestTemplate("notify", { node: nodeToJSON(node) }, "POST", ip, port, callback);
     };
 }
 var dummy = new Node("127.0.0.1","4321","42");
 
 var augmentCallbackToCreateNode = function(callback) {
-    return function(node) {
-        callback(new Node(node.ip, node.port, node.key));
+    return function(node, err) {
+        if(node) {
+            callback(new Node(node.ip, node.port, node.key), err);
+        } else {
+            callback(null, err);
+        }
     }
 }
 

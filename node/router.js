@@ -11,7 +11,6 @@ var route = function(pathname, handlers, data, callback) {
     // Handle requests of our type
     if (pathParts.length >= 3) {
         var fun = pathParts[2];
-        var params = pathParts.slice(3);
 
         if (service.length === 0) {
             result.status = 404;
@@ -25,17 +24,20 @@ var route = function(pathname, handlers, data, callback) {
                 var funImpl = serviceImpl[fun];
 
                 if (typeof(funImpl) === "function") {
-                    console.log("Calling: " + fun + " with params: ");
-                    //params.push(data);
+                    //console.log("Calling: " + fun + " with params: ");
+                    var params = [];
+                    params.push(data);
                     params.push(function(node) {
-                        result.data = {
-                            ip: node.ip,
-                            port: node.port,
-                            key: node.key
-                        };
+                        if(node) {
+                            result.data = {
+                                ip: node.ip,
+                                port: node.port,
+                                key: node.key
+                            };
+                        }
                         callback(result);
                     })
-                    console.log(params);
+                    //console.log(params);
                     result.status = 200;
                     result.message = "OK";
                     funImpl.apply(service, params);

@@ -1,6 +1,6 @@
 var server = require('./server');
 var router = require('./router');
-var Chord = require('./chord2').Chord;
+var chord = require('./chord2');
 var test = require('./test');
 var remoteNode = require('./RemoteNode');
 var crypto = require('crypto');
@@ -19,12 +19,9 @@ var computeKey = function(ip, port) {
     return parseInt(hex,16) % k;
 };
 
-var handlers = {};
-handlers['test'] = test;
-
 var args = process.argv.slice(2);
 
-
+var Chord = chord.Chord;
 Chord.m = m;
 Chord.k = k;
 Chord.ip = "127.0.0.1";
@@ -41,8 +38,8 @@ if(args.length >= 2) {
     Chord.join();
 };
 
-handlers['chord'] = Chord;
-//handlers['chord'] = new chord.Chord();
+var handlers = {};
+handlers['chord'] = chord;
 
 
 server.start(router.route, handlers, args[0]);

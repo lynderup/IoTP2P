@@ -10,7 +10,7 @@ var start = function(route, handlers, port) {
         var pathname = parsedUrl.pathname;
         var body = '';
         request.on('data', function(data) {
-            console.log("Data received: " + data);
+            //console.log("Data received: " + data);
             body += data;
 
             if (body.length > 1e6) { // Prevent flooding, 1 mb data or more
@@ -22,13 +22,13 @@ var start = function(route, handlers, port) {
         request.on('end', function() {
             var data = {};
             if(request.method == "POST") {
-                data = qs.parse(body);
+                data = JSON.parse(body);
             }
             else {
                 data = parsedUrl.query;
             }
-            console.log("Routing data:");
-            console.log(data);
+            //console.log("Routing data:");
+            //console.log(data);
             route(pathname, handlers, data, function(result) {
 
                 response.writeHead(result.status, {"Content-Type": "application/json"});
