@@ -118,12 +118,13 @@ var Chord = {
                      && node.key != Chord.key) {
                         Chord.predecessor = node;
                     }
+                    //Chord.predecessor
                 } else {
                     //Something wrong with predecessor
                     console.log("Error - predecessor gone")
                     Chord.predecessor = Chord.successor;
                 }
-            }
+            })
         }
         setTimeout(Chord.stabilize, 1000);
     },
@@ -167,3 +168,4 @@ exports.notify = function(data, callback) {
     Chord.notify(node);
     callback();
 };
+exports.get_node = function(data, callback) {callback({ip:Chord.ip, port:Chord.port, key:Chord.key})}
