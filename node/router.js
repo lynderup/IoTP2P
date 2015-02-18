@@ -1,3 +1,4 @@
+var fs = require('fs');
 var route = function(pathname, handlers, data, callback) {
     var pathParts = pathname.split('/');
     var service = pathParts[1];
@@ -7,6 +8,21 @@ var route = function(pathname, handlers, data, callback) {
     if (service && service === "favicon.ico") {
         result = { status: 404, message: "No favicon", data: {} };
     };
+	
+	if(service === "index.html"){
+	    
+		result = { status: 200, message: "test", data: {} };
+		
+		fs.readFile("../html/index.html", function(err, js){
+			if(err){
+				throw err;
+			}
+			result.ContentType = "text/html";
+			result.data = js;
+			console.log(js)			
+			callback(result);
+		})
+	};
 
     // Handle requests of our type
     if (pathParts.length >= 3) {

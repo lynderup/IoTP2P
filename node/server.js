@@ -18,6 +18,7 @@ var start = function(route, handlers, port) {
             }
         });
 
+		
 
         request.on('end', function() {
             var data = {};
@@ -33,9 +34,18 @@ var start = function(route, handlers, port) {
 
                 response.writeHead(result.status, {"Content-Type": "application/json"});
                 
+			
+				
                 if (result.status === 200) {
-                    response.write(JSON.stringify({ data: result.data }));
-                } else {
+					if(result.Contentype  = "text/html"){
+							response.writeHead(result.status, {"Content-Type": "text/html"})
+							response.write(result.data);
+					}
+				else{
+					response.write(JSON.stringify({ data: result.data }));
+					}
+				}
+				else {
                     response.write(JSON.stringify({ error: result.message }));
                 }
                 response.write("\n");
