@@ -11,17 +11,17 @@ var route = function(pathname, handlers, data, callback) {
 	
 	if(service === "index.html"){
 	    
-		result = { status: 200, message: "test", data: {} };
+		result = { status: 200, message: "test"};
 		
 		fs.readFile("../html/index.html", function(err, js){
 			if(err){
 				throw err;
 			}
 			result.ContentType = "text/html";
-			result.data = js;
-			console.log(js)			
+			result.data = js;		
 			callback(result);
 		})
+          return;
 	};
 
     // Handle requests of our type
