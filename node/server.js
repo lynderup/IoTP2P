@@ -32,20 +32,22 @@ var start = function(route, handlers, port) {
             //console.log(data);
             route(pathname, handlers, data, function(result) {
 
-                response.writeHead(result.status, {"Content-Type": "application/json"});
+                
                 
 			
 				
                 if (result.status === 200) {
-					if(result.Contentype  = "text/html"){
+					if(result.ContentType  == "text/html"){
 							response.writeHead(result.status, {"Content-Type": "text/html"})
 							response.write(result.data);
 					}
 				else{
+					response.writeHead(result.status, {"Content-Type": "application/json"});
 					response.write(JSON.stringify({ data: result.data }));
 					}
 				}
 				else {
+					response.writeHead(result.status, {"Content-Type": "application/json"});
                     response.write(JSON.stringify({ error: result.message }));
                 }
                 response.write("\n");

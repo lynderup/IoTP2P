@@ -22,6 +22,7 @@ var route = function(pathname, handlers, data, callback) {
 			console.log(js)			
 			callback(result);
 		})
+		return;
 	};
 
     // Handle requests of our type

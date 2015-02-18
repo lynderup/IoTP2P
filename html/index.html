@@ -10,10 +10,10 @@
   <h1>This is our awesome chord</h1>
    
   <div>Current node :</div>
-  <p>Current node id  = <span id="nodeId">100</span></p>
+  <p>Current node id  = <span id="nodeId"></span></p>
 
   <div>
-<a href="#" id="findPredesessor">Find predesessor</a>	<input type="button" id="findNode" value="Find node" /><input type="text" id="inputId" placeholder="node id"/> <a href="#" id="findSuccessor">Find successor</a>
+<a href="#" id="findPredesessor">Predesessor</a>	<input type="button" id="findNode" value="Find node" /><input type="text" id="inputId" placeholder="node id"/> <a href="#" id="findSuccessor">Successor</a>
   </div>
 
 </body>
@@ -22,36 +22,90 @@
 
 <script type="text/javaScript">
 	var findPredesessor =	$("#findPredesessor");
-	var findSuccessor =	$("#findPredesessor");
+	var findSuccessor =	$("#findSuccessor");
 	var findNode = $("#findNode");
 	var inputId = $("#inputId");
 	var nodeId = $("#nodeId");
+
+	
+	$.ajax({
+		url : "/chord/get_node",
+		type : "GET",
+		ContentType : "application/json"
+	}).success(function(data){
+		updateData(data.data)
+		
+		}
+				).error(function(data){
+						
+								}
+				)
+
+
 	
 	findNode.on("click", function(){ 
-		console.log(inputId.val())
-		if(inputId != ""){
-		//make ajax call to server with id
 		
-		//update Links to nodes and id fields
-		updateData("");
+		if(inputId.val() != ""){
+		
+		$.ajax({
+		url : "/chord/find_successor?id="+inputId.val(),
+		type : "GET",
+		ContentType : "application/json"
+	}).success(function(data){
+	console.log(data.data.ip +":" +data.data.port + "/" + "index.html");
+		window.location = "http://"+data.data.ip +":" +data.data.port + "/" + "index.html";
+
+		}
+			).error(function(data){
+		
+				}
+			)
 		}
 	});
 	
 	function updateData(node){
 		
-		findPredesessor.attr("href", node.predesessorLink);
-		findSuccessor.attr("href", node.sucessorLink);
-		nodeId.text(node.id);
+	//	findPredesessor.attr("href", node.predesessorLink);
+		// findSuccessor.attr("href", node.sucessorLink);
+		nodeId.text(node.key);
 	}
 	
 	findPredesessor.on("click", function(){ 
-		console.log(inputId.val())
-		if(inputId != ""){
 		
-		updateData("");
+		$.ajax({
+		url : "/chord/get_predecessor",
+		type : "GET",
+		ContentType : "application/json"
+	}).success(function(data){
+	//console.log(data.data.ip +":" +data.data.port + "/" + "index.html");
+		window.location = "http://"+data.data.ip +":" +data.data.port + "/" + "index.html";
+
+		}
+			).error(function(data){
+		
+				}
+			)
 		
 		}
-	});
+	);
 	
+	findSuccessor.on("click", function(){ 
+		
+		$.ajax({
+		url : "/chord/get_successor",
+		type : "GET",
+		ContentType : "application/json"
+	}).success(function(data){
+	//console.log(data.data.ip +":" +data.data.port + "/" + "index.html");
+		window.location = "http://"+data.data.ip +":" +data.data.port + "/" + "index.html";
+
+		}
+			).error(function(data){
+		
+				}
+			)
+		
+		}
+	);
 	
 </script>
