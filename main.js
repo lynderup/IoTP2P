@@ -3,6 +3,7 @@ var server = require('./node/server');
 var router = require('./node/router');
 var test = require('./node/test');
 var chord = require('./node/chord');
+var chord2 = require('./node/chord');
 
 // ncurses
 var nc = require('ncurses');
@@ -10,7 +11,9 @@ var widgets = require('ncurses/lib/widgets');
 
 // The server setups
 var servers = [];
+var serverNames = [];
 var port = 49152;
+
 var startServers = function(count) {
   count = count || 1;
 
@@ -24,7 +27,11 @@ var startServers = function(count) {
     servers.push(s);
     win.centertext(i, "Port: " + port);
     win.refresh();
+
+    serverNames.push("Node at port + " + port);
   }
+
+  listNodes(serverNames);
 };
 
 var stopServers = function() {
@@ -35,15 +42,60 @@ var stopServers = function() {
   servers = [];
 };
 
+var killServer = function(node) {
+  var index = serverNames.indexOf(node);
+  win.centertext(40, "Killing server: " + node);
+  win.refresh();
+
+  var server = servers[index];
+  server.close(function() {
+    servers.splice(index, 1);
+    serverNames.splice(index, 1);
+    listNodes(serverNames);
+  });
+};
+
 
 // ncurses "UI"
 var win = new nc.Window();
 
-win.on('inputChar', function(c, i) {
-  if (i === nc.keys.ESC || c === 'q')
-    win.close();
-  else if (c === 'n') {
-    widgets.InputBox("How many servers?",
+var listNodes = function(nodes) {
+  var actualNodes = nodes.slice(0);
+  actualNodes.push("Add nodes");
+  actualNodes.push("Quit");
+
+  var lb = widgets.ListBox(actualNodes, {
+    title: 'Active nodes',
+    height: win.height,
+    width: win.width,
+    style: {
+      colors: {
+        bg: 'blue',
+        sel: {
+          fg: 'red'
+        }
+      }
+    }
+  }, function(selection) {
+    selection = selection || "nothing";
+
+    if (selection === "Quit") {
+      stopServers();
+      win.close();
+    } else if (selection === "Add nodes") {
+      startServersInput();
+    } else {
+      win.centertext(30, "You've selected: " + selection);
+      killServer(selection);
+      win.refresh();
+    }
+  });
+
+  win.refresh();
+};
+
+var startServersInput = function() {
+      widgets.InputBox("How many servers?",
                     {
                       buttons: ['OK', "Cancel"],
                       pos: "Center",
@@ -69,10 +121,11 @@ win.on('inputChar', function(c, i) {
 
                       win.refresh();
                     });
-  }
-});
-win.hline(win.height-2, 0, win.width);
+};
+
 win.setscrreg(1, win.height-3);
 win.refresh();
+
+listNodes(servers);
 
 nc.showCursor = false;
