@@ -32,7 +32,7 @@ var start = function(route, handlers, port) {
 
                 if (result.status === 200) {
 	            if(result.ContentType  == "text/html"){
-	                response.writeHead(result.status, {"Content-Type": "text/html"})
+	                response.writeHead(result.status, {"Content-Type": "text/html"});
 	                response.write(result.data);
 	            }
 	            else{
@@ -43,7 +43,7 @@ var start = function(route, handlers, port) {
 	        else {
 	            response.writeHead(result.status, {"Content-Type": "application/json"});
                     response.write(JSON.stringify({ error: result.message }));
-                } 
+                }
                 response.write("\n");
                 response.end();
             });

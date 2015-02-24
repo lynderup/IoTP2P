@@ -45,7 +45,7 @@ ponyString += "________________________________________________________________â
 var server = require('./node/server');
 var router = require('./node/router');
 var chord = require('./node/chord2');
-var remoteNode = require('./RemoteNode');
+//var remoteNode = require('./RemoteNode');
 var crypto = require('crypto');
 
 
@@ -63,42 +63,64 @@ var computeKey = function(ip, port) {
     return parseInt(hex,16) % k;
 };
 
+var ip = "127.0.0.1";
 
 // ncurses
 var nc = require('ncurses');
 var widgets = require('ncurses/lib/widgets');
 
 // The server setups
+var activeNodes = [];
 var servers = [];
 var serverNames = [];
-var port = 49152;
+var basePort = 49152;
 
 var startServers = function(count) {
   count = count || 1;
 
   for (var i = 0; i<count; i++) {
-    var handlers = [];
-//    handlers['chord'] = new chord.Chord();
-    handlers['test'] = test;
+    var localPort = basePort+i;
+    var key = computeKey(ip, localPort);
+    var chordNode = new chord.Chord(ip, localPort, key, m, k);
 
-    port++;
-    var s = server.start(router.route, handlers, port);
+    var handlers = {};
+
+    if (i === 0) {
+      chordNode.join();
+    } else {
+      var remotePort = servers[0].address().port;
+      var remoteNode = new remoteNode.Node("127.0.0.1",
+                                           remotePort,
+                                           computeKey("127.0.0.1", remotePort));
+      chordNode.join();
+    }
+
+    handlers['chord'] = new chord.ChordProxy(chordNode);
+
+    var s = server.start(router.route, handlers, localPort);
     servers.push(s);
-    win.centertext(i, "Port: " + port);
-    win.refresh();
+    activeNodes.push(chordNode);
 
-    serverNames.push("Node at port + " + port);
+    serverNames.push("Node at port + " + s.address().port);
   }
 
   listNodes(serverNames);
 };
 
-var stopServers = function() {
+var stopServers = function(cb) {
   for (var i=0; i<servers.length; i++) {
-    servers[i].close();
+    // one-shot closure, prevent i=servers.length
+    servers[i].close(function(i) {
+      return function() {
+        activeNodes[i].close();
+      };
+    }(i));
   }
 
   servers = [];
+  serverNames = [];
+  listNodes(serverNames);
+  cb();
 };
 
 var killServer = function(node) {
@@ -110,6 +132,8 @@ var killServer = function(node) {
   server.close(function() {
     servers.splice(index, 1);
     serverNames.splice(index, 1);
+    activeNodes[index].close();
+    activeNodes.splice(index, 1);
 
     if (ponyMode === true) {
       widgets.Viewer(ponyString, {
@@ -131,6 +155,24 @@ var killServer = function(node) {
 };
 
 
+var showInfo = function(node) {
+  var info = "flobber";
+
+  var viewer = widgets.Viewer(info, {
+    title: "Test",
+    width: parseInt(win.width/2-1),
+    height: win.height,
+    pos: 'right',
+    style: {
+      colors: {
+        bg: 'blue'
+      }
+    }
+  }, function() {
+    win.refresh();
+  });
+};
+
 // ncurses "UI"
 var win = new nc.Window();
 
@@ -142,7 +184,8 @@ var listNodes = function(nodes) {
   var lb = widgets.ListBox(actualNodes, {
     title: 'Active nodes',
     height: win.height,
-    width: win.width,
+    width: parseInt(win.width/2-1),
+    pos: 'left',
     style: {
       colors: {
         bg: 'blue',
@@ -153,16 +196,24 @@ var listNodes = function(nodes) {
     }
   }, function(selection) {
     selection = selection || "nothing";
-
     if (selection === "Quit") {
-      stopServers();
-      win.close();
+      stopServers(function() {
+        win.close();
+      });
     } else if (selection === "Add nodes") {
       startServersInput();
     } else {
       win.centertext(30, "You've selected: " + selection);
       killServer(selection);
       win.refresh();
+    }
+  }, function(selection) {
+    if (selection === "Quit"){
+//    } else if (selection === "Add nodes") {
+    } else {
+      var index = serverNames.indexOf(selection);
+      var node = activeNodes[index];
+      showInfo(node);
     }
   });
 
