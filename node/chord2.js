@@ -12,27 +12,29 @@ var Chord = function (ip, port, key, m, k) {
     this.m = m; //Address bits
     this.k = k; //Address space (2^m)
 
+    var thisNode = this;
+
     this.get_successor =  function(callback) {
-        callback(this.successor);
+        callback(thisNode.successor);
     };
 
     this.get_predecessor = function(callback) {
-        callback(this.predecessor);
+        callback(thisNode.predecessor);
     };
 
     this.find_successor = function(id, callback) {
         //Local call, should not fail
-        this.find_predecessor(id, function(node, err) {
+        thisNode.find_predecessor(id, function(node, err) {
             node.get_successor(callback);
         });
     }; 
     
     this.find_predecessor = function(id, callback) {
-        if (this.in_interval(id, Chord.key, Chord.successor.key)) {
-            callback(this);
+        if (thisNode.in_interval(id, thisNode.key, thisNode.successor.key)) {
+            callback(thisNode);
         } else {
             //node.closest_preceding_finger(id).find_predecessor(callback);
-            this.successor.find_predecessor(id, function(node, err) {
+            thisNode.successor.find_predecessor(id, function(node, err) {
                 if (node) {
                     callback(node, err);
                 } else {
@@ -61,25 +63,25 @@ return Chord;
     this.join = function(node) {
         if (node) {
             console.log("join with " + node.key);
-            this.init(node)
+            thisNode.init(node)
 	    // move keys in (predecessor, node] from successor
         } else {
             console.log("Starting new Chord ring");
-            this.successor = this;
-	    this.predecessor = this;
-            this.stabilize();
+            thisNode.successor = thisNode;
+	    thisNode.predecessor = thisNode;
+            thisNode.stabilize();
         }
     };
 
     //initialize predecessor and successors
     this.init = function(node) {
-        node.find_predecessor(this.key, function(preNode, err) {
+        node.find_predecessor(thisNode.key, function(preNode, err) {
             if (preNode) {
-                this.predecessor = preNode;
+                thisNode.predecessor = preNode;
                 preNode.get_successor(function(succNode, err) {
                     if (succNode) {
-                        this.successor = succNode;
-                        this.stabilize();
+                        thisNode.successor = succNode;
+                        thisNode.stabilize();
                     } else {
                         //Something wrong with preNode
                         console.log("Error in init");
@@ -93,14 +95,13 @@ return Chord;
     };
 
     this.stabilize = function() {
-        if (this.successor) {
-            console.log(this.successor);
-            this.successor.get_predecessor(function(node, err) {
+        if (thisNode.successor) {
+            thisNode.successor.get_predecessor(function(node, err) {
                 if(node) {
-                    if(this.in_interval(node.key, this.key, this.successor.key)) {
-                        this.successor = node;
+                    if(thisNode.in_interval(node.key, thisNode.key, thisNode.successor.key)) {
+                        thisNode.successor = node;
                     }
-                    this.successor.notify(this, function(_, err) {
+                    thisNode.successor.notify(thisNode, function(_, err) {
                         if (err) {
                             console.log("Error can't notify successor");
                         }
@@ -108,32 +109,32 @@ return Chord;
                 } else {
                     //Something wrong with successor
                     console.log("Error - successor gone");
-                    this.successor = this.predecessor;
+                    thisNode.successor = thisNode.predecessor;
                 }
             })
         }
-        if (this.predecessor) {
-            this.predecessor.get_successor(function(node, err) {
+        if (thisNode.predecessor) {
+            thisNode.predecessor.get_successor(function(node, err) {
                 if(node) {
-                    if(this.in_interval(node.key, this.predecessor.key, this.key)
-                     && node.key != this.key) {
-                        this.predecessor = node;
+                    if(thisNode.in_interval(node.key, thisNode.predecessor.key, thisNode.key)
+                     && node.key != thisNode.key) {
+                        thisNode.predecessor = node;
                     }
                     //Chord.predecessor
                 } else {
                     //Something wrong with predecessor
                     console.log("Error - predecessor gone")
-                    this.predecessor = this.successor;
+                    thisNode.predecessor = thisNode.successor;
                 }
             })
         }
-        setTimeout(this.stabilize, 1000);
+        setTimeout(thisNode.stabilize, 1000);
     };
 
     this.notify = function(node) {
         console.log("Notified with: " + node.key);
-        if(this.in_interval(node.key, this.predecessor.key, this.key)) {
-            this.predecessor = node;
+        if(thisNode.in_interval(node.key, thisNode.predecessor.key, thisNode.key)) {
+            thisNode.predecessor = node;
         }
     };
 
@@ -144,9 +145,9 @@ return Chord;
         var high = b;
         //Handling overflow in address space
         if (high <= low) {
-            high += this.k;
+            high += thisNode.k;
             if (key <= low) {
-                key += this.k;
+                key += thisNode.k;
             }
         }
         return (low < key && key <= high);
