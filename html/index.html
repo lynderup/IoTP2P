@@ -1,111 +1,29 @@
 <!DOCTYPE html>
 <html>
-<head>
-<script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.3/jquery.min.js"></script>
-  <title>Page Title</title>
-</head>
+  <head>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.3/jquery.min.js"></script>
+    <script src="index.js"></script>
+    <title>Page Title</title>
+  </head>
 
-<body>
+  <body>
 
-  <h1>This is our awesome chord</h1>
-   
-  <div>Current node :</div>
-  <p>Current node id  = <span id="nodeId"></span></p>
+    <h1>This is our awesome chord</h1>
+    
+    <div>Current node :</div>
+    <p>Current node id  = <span id="nodeId"></span></p>
 
-  <div>
-<a href="#" id="findPredesessor">Predesessor</a>	<input type="button" id="findNode" value="Find node" /><input type="text" id="inputId" placeholder="node id"/> <a href="#" id="findSuccessor">Successor</a>
-  </div>
+    <div>
+      <a href="#" id="findPredesessor">Predesessor</a>	
+      <input type="button" id="findNode" value="Find node" />
+      <input type="text" id="inputId" placeholder="node id"/> 
+      <a href="#" id="findSuccessor">Successor</a>
+    </div>
 
-</body>
+  </body>
 
 </html>
 
 <script type="text/javaScript">
-	var findPredesessor =	$("#findPredesessor");
-	var findSuccessor =	$("#findSuccessor");
-	var findNode = $("#findNode");
-	var inputId = $("#inputId");
-	var nodeId = $("#nodeId");
-
-	
-	$.ajax({
-		url : "/chord/get_key",
-		type : "GET",
-		ContentType : "application/json"
-	}).success(function(data){
-		updateData(data.data)
-		
-		}
-				).error(function(data){
-						
-								}
-				)
-
-
-	
-	findNode.on("click", function(){ 
-		
-		if(inputId.val() != ""){
-		
-		$.ajax({
-		url : "/chord/find_successor?id="+inputId.val(),
-		type : "GET",
-		ContentType : "application/json"
-	}).success(function(data){
-	console.log(data.data.ip +":" +data.data.port + "/" + "index.html");
-		window.location = "http://"+data.data.ip +":" +data.data.port + "/" + "index.html";
-
-		}
-			).error(function(data){
-		
-				}
-			)
-		}
-	});
-	
-	function updateData(key){
-		
-	//	findPredesessor.attr("href", node.predesessorLink);
-		// findSuccessor.attr("href", node.sucessorLink);
-		nodeId.text(key);
-	}
-	
-	findPredesessor.on("click", function(){ 
-		
-		$.ajax({
-		url : "/chord/get_predecessor",
-		type : "GET",
-		ContentType : "application/json"
-	}).success(function(data){
-	//console.log(data.data.ip +":" +data.data.port + "/" + "index.html");
-		window.location = "http://"+data.data.ip +":" +data.data.port + "/" + "index.html";
-
-		}
-			).error(function(data){
-		
-				}
-			)
-		
-		}
-	);
-	
-	findSuccessor.on("click", function(){ 
-		
-		$.ajax({
-		url : "/chord/get_successor",
-		type : "GET",
-		ContentType : "application/json"
-	}).success(function(data){
-	//console.log(data.data.ip +":" +data.data.port + "/" + "index.html");
-		window.location = "http://"+data.data.ip +":" +data.data.port + "/" + "index.html";
-
-		}
-			).error(function(data){
-		
-				}
-			)
-		
-		}
-	);
-	
+  init()
 </script>
