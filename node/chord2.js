@@ -1,3 +1,4 @@
+/*global nodeToSimple */
 var remoteNode = require('./RemoteNode');
 
 var Chord = function (ip, port, key, m, k) {
@@ -155,26 +156,42 @@ return Chord;
 }
 
 var ChordProxy = function(node) {
+
+    var nodeToSimple = function(node) {
+        return {
+            ip: node.ip,
+            port: node.port,
+            key: node.key
+        };
+    }
+
     this.get_successor = function(data, callback) {
-        node.get_successor(callback)
+        node.get_successor(function(node) {
+            callback(nodeToSimple(node));
+        });
     };
     this.get_predecessor = function(data, callback) {
-        node.get_predecessor(callback)
+        node.get_predecessor(function(node) {
+            callback(nodeToSimple(node));
+        });
     };
     this.find_successor =  function(data, callback) {
-        node.find_successor(parseInt(data.id), callback);
+        node.find_successor(parseInt(data.id), function(node) {
+            callback(nodeToSimple(node));
+        });
     };
     this.find_predecessor =  function(data, callback) {
-        node.find_predecessor(parseInt(data.id), callback);
+        node.find_predecessor(parseInt(data.id), function(node) {
+            callback(nodeToSimple(node));
+        });
     };
     this.notify = function(data, callback) {
-        var json = JSON.parse(data.node);
-        var rnode = new remoteNode.Node(json.ip, json.port, json.key);
+        var rnode = new remoteNode.Node(data.node.ip, data.node.port, data.node.key);
         node.notify(rnode);
         callback();
     };
-    this.get_node = function(node, data, callback) {
-        callback({ip:node.ip, port:node.port, key:node.key})
+    this.get_key = function(data, callback) {
+        callback(node.key);
     };
 };
 

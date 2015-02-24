@@ -45,13 +45,9 @@ var route = function(pathname, handlers, data, callback) {
                     //console.log("Calling: " + fun + " with params: ");
                     var params = [];
                     params.push(data);
-                    params.push(function(node) {
-                        if(node) {
-                            result.data = {
-                                ip: node.ip,
-                                port: node.port,
-                                key: node.key
-                            };
+                    params.push(function(data) {
+                        if(data) {
+                            result.data = data;
                         }
                         callback(result);
                     })

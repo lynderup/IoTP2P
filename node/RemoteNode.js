@@ -94,7 +94,7 @@ var Node = function(ip, port, key) {
 */
 
     this.notify = function(node, callback) {
-        requestTemplate("notify", { node: nodeToJSON(node) }, "POST", ip, port, callback);
+        requestTemplate("notify", { node: nodeToSimple(node) }, "POST", ip, port, callback);
     };
 }
 var dummy = new Node("127.0.0.1","4321","42");
@@ -109,13 +109,12 @@ var augmentCallbackToCreateNode = function(callback) {
     }
 }
 
-var nodeToJSON = function(node) {
-    var json = {
+var nodeToSimple = function(node) {
+    return {
         ip: node.ip,
         port: node.port,
         key: node.key
     };
-    return JSON.stringify(json);
 }
 
 // Stored for reference, shouldn't be needed, seems to be local only

@@ -29,7 +29,7 @@
 
 	
 	$.ajax({
-		url : "/chord/get_node",
+		url : "/chord/get_key",
 		type : "GET",
 		ContentType : "application/json"
 	}).success(function(data){
@@ -63,11 +63,11 @@
 		}
 	});
 	
-	function updateData(node){
+	function updateData(key){
 		
 	//	findPredesessor.attr("href", node.predesessorLink);
 		// findSuccessor.attr("href", node.sucessorLink);
-		nodeId.text(node.key);
+		nodeId.text(key);
 	}
 	
 	findPredesessor.on("click", function(){ 
