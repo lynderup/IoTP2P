@@ -185,7 +185,7 @@ return Chord;
         return (low < key && key <= high);
     }
 
-    this.stop = function() {
+    this.close = function() {
         clearTimeout(thisNode.fixFingersTimer);
         clearTimeout(thisNode.stabilizeTimer);
     }
