@@ -21,24 +21,23 @@ var computeKey = function(ip, port) {
 
 var args = process.argv.slice(2);
 
-var Chord = chord.Chord;
-Chord.m = m;
-Chord.k = k;
-Chord.ip = "127.0.0.1";
-Chord.port = args[0];
-Chord.key = computeKey("127.0.0.1",args[0]);
+var ip = "127.0.0.1"
+var port = args[0];
+var key = computeKey(ip, port);
 
-console.log("starting on port " + args[0]);
-console.log("With key: " + Chord.key);
+var chordNode = new chord.Chord(ip, port,key, m, k);
+
+console.log("starting on port " + port);
+console.log("With key: " + key);
 
 if(args.length >= 2) {
     var node = new remoteNode.Node("127.0.0.1", args[1], computeKey("127.0.0.1",args[1]));
-    Chord.join(node)
+    chordNode.join(node)
 } else {
-    Chord.join();
+    chordNode.join();
 };
 
 var handlers = {};
-handlers['chord'] = chord;
+handlers['chord'] = new chord.ChordProxy(chordNode);
 
-server.start(router.route, handlers, args[0]);
+server.start(router.route, handlers, port);
