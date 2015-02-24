@@ -41,7 +41,7 @@ var start = function(route, handlers, port) {
 	        else {
 	            response.writeHead(result.status, {"Content-Type": "application/json"});
                     response.write(JSON.stringify({ error: result.message }));
-                } 
+                }
                 response.write("\n");
                 response.end();
             });
