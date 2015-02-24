@@ -40,5 +40,4 @@ if(args.length >= 2) {
 var handlers = {};
 handlers['chord'] = new chord.ChordProxy(chordNode);
 
-
 server.start(router.route, handlers, port);

@@ -231,3 +231,4 @@ Chord.prototype.lookup = function() {
 };
 
 exports.Chord = Chord;
+exports.foo = 3;
