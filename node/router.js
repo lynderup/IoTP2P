@@ -8,32 +8,42 @@ var route = function(pathname, handlers, data, callback) {
     if (service && service === "favicon.ico") {
         result = { status: 404, message: "No favicon", data: {} };
     };
+    
+    if (service === "index.html" || service === "") {
+	result.status = 200;
 	
-	if(service === "index.html"){
-	    
-		result = { status: 200, message: "test"};
-		
-		fs.readFile("../html/index.html", function(err, js){
-			if(err){
-				throw err;
-			}
-			result.ContentType = "text/html";
-			result.data = js;		
-			callback(result);
-		})
+	fs.readFile("../html/index.html", function(err, html){
+	    if(err){
+		throw err;
+	    }
+	    result.contentType = "text/html";
+	    result.data = html;		
+	    callback(result);
+	})
 
-          return;
+        return;
+    };
 
-	};
+    if (service === "index.js") {
+	result.status = 200;
+	
+	fs.readFile("../html/index.js", function(err, js){
+	    if(err){
+		throw err;
+	    }
+	    result.contentType = "text/javascript";
+	    result.data = js;		
+	    callback(result);
+	})
+
+        return;        
+    };
 
     // Handle requests of our type
     if (pathParts.length >= 3) {
         var fun = pathParts[2];
 
-        if (service.length === 0) {
-            result.status = 404;
-            result.message = "Zero length service recieved, please provide a service as: host/{service}/{function}";
-        } else if (fun.length === 0) {
+        if (fun.length === 0) {
             result.status = 404;
             result.message = "Zero length function recieved, please provide a function as: host/{service}/{function}";
         } else {
@@ -49,11 +59,12 @@ var route = function(pathname, handlers, data, callback) {
                         if(data) {
                             result.data = data;
                         }
+                        result.status = 200;
+                        result.message = "OK";
+                        result.contentType = "application/json";
+
                         callback(result);
                     })
-                    //console.log(params);
-                    result.status = 200;
-                    result.message = "OK";
                     funImpl.apply(service, params);
                 } else {
                     result.status = 404;

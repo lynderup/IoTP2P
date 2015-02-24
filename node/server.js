@@ -26,19 +26,17 @@ var start = function(route, handlers, port) {
             else {
                 data = parsedUrl.query;
             }
-            //console.log("Routing data:");
-            //console.log(data);
+
             route(pathname, handlers, data, function(result) {
 
                 if (result.status === 200) {
-	            if(result.ContentType  == "text/html"){
-	                response.writeHead(result.status, {"Content-Type": "text/html"});
-	                response.write(result.data);
-	            }
-	            else{
-	                response.writeHead(result.status, {"Content-Type": "application/json"});
+                    response.writeHead(result.status, {"Content-Type": result.contentType})
+
+                    if (result.contentType  == "application/json") {
 	                response.write(JSON.stringify({ data: result.data }));
-	            }
+                    } else {
+                        response.write(result.data);
+                    }
 	        }
 	        else {
 	            response.writeHead(result.status, {"Content-Type": "application/json"});
