@@ -96,6 +96,29 @@ var Node = function(ip, port, key) {
     this.notify = function(node, callback) {
         requestTemplate("notify", { node: nodeToSimple(node) }, "POST", ip, port, callback);
     };
+
+    this.get_fingers = function(callback) {
+        requestTemplate("get_fingers", {}, "GET", ip, port, function(data, err) {
+            if(data) {
+                var fingers = [];
+
+                //make RemoteNodes from fingers
+                var i;
+                for (i = 0; i < data.length; i++) {
+                    var finger = data[i];
+                    if (finger) {
+                        fingers[i] = new Node(finger.ip, finger.port, finger.key);
+                    } else {
+                        fingers[i] = null;
+                    }
+                }
+
+                callback(fingers, err);
+            } else {
+                callback(null, err);
+            }
+        });
+    }
 }
 var dummy = new Node("127.0.0.1","4321","42");
 
