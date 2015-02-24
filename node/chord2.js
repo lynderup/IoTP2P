@@ -13,6 +13,9 @@ var Chord = function (ip, port, key, m, k) {
     this.m = m; //Address bits
     this.k = k; //Address space (2^m)
 
+    this.stabilizeTimer = null;
+    this.fixFingersTimer = null;
+
     var thisNode = this;
 
     this.get_successor =  function(callback) {
@@ -140,7 +143,7 @@ return Chord;
                 }
             })
         }
-        setTimeout(thisNode.stabilize, 1000);
+        thisNode.stabilizeTimer = setTimeout(thisNode.stabilize, 1000);
     };
 
     this.notify = function(node) {
@@ -155,17 +158,16 @@ return Chord;
     this.fix_fingers = function() {
         var indexKey = (Math.pow(2, index) + thisNode.key) % thisNode.k;
 
+        //index can change, and will, before callback
         (function(i) {
-            //local call. callback is only called if everything went ok
+            //local call. callback is only called if everything went ok (yet)
             thisNode.find_successor(indexKey, function(node, err) {
-                console.log("Finger " + i + " with key: " + indexKey);
-                console.log("Node with key" + node.key);
                 thisNode.fingers[i] = node;
             });
         })(index);
         
         index = (index + 1) % thisNode.m;
-        setTimeout(thisNode.fix_fingers, 1000);
+        thisNode.fixFingersTimer = setTimeout(thisNode.fix_fingers, 1000);
     };
 
     // a < k <= b mod k
@@ -181,6 +183,11 @@ return Chord;
             }
         }
         return (low < key && key <= high);
+    }
+
+    this.stop = function() {
+        clearTimeout(thisNode.fixFingersTimer);
+        clearTimeout(thisNode.stabilizeTimer);
     }
 }
 
