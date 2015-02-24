@@ -44,9 +44,25 @@ ponyString += "________________________________________________________________â
 // Our imports
 var server = require('./node/server');
 var router = require('./node/router');
-var test = require('./node/test');
-var chord = require('./node/chord');
-var chord2 = require('./node/chord');
+var chord = require('./node/chord2');
+var remoteNode = require('./RemoteNode');
+var crypto = require('crypto');
+
+
+var shasummer = function(data) {
+  var shasum = crypto.createHash('sha256');
+  shasum.update(data);
+  return shasum.digest("hex");
+};
+
+var m = 10; //address bits
+var k = Math.pow(2, m); //0-k address space
+
+var computeKey = function(ip, port) {
+    var hex = shasummer(ip+port).substring(0,m);
+    return parseInt(hex,16) % k;
+};
+
 
 // ncurses
 var nc = require('ncurses');

@@ -41,5 +41,4 @@ if(args.length >= 2) {
 var handlers = {};
 handlers['chord'] = chord;
 
-
 server.start(router.route, handlers, args[0]);
