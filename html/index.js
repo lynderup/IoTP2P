@@ -4,6 +4,7 @@ function init() {
     var findNode = $("#findNode");
     var inputId = $("#inputId");
     var nodeId = $("#nodeId");
+    var fingerTable = $("#fingerTable");
 
 
     $.ajax({
@@ -60,4 +61,33 @@ function init() {
 
         }).error(function(data){})
     });
+
+    function updataFingerTable() {
+
+        $.ajax({
+            url : "/chord/get_fingers",
+            type : "GET",
+            ContentType : "application/json"
+        }).success(function(data){
+            fingerTable.empty();
+            var fingers = data.data;
+            var i;
+            for (i = 0; i < fingers.length; i++) {
+                var finger = fingers[i];
+                var row = $(document.createElement("tr"));
+                var rowHTML = "<td>" + i + "</td>";
+                if(finger) {
+                    rowHTML += "<td>" + finger.key + "</td>";
+                } else {
+                    rowHTML += "<td>null</td>"
+                }
+                row.append($(rowHTML));
+                fingerTable.append(row);
+            }
+            
+        }).error(function(data){})
+
+        setTimeout(updataFingerTable, 1000);
+    };
+    updataFingerTable();
 }

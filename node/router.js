@@ -39,6 +39,21 @@ var route = function(pathname, handlers, data, callback) {
         return;        
     };
 
+    if (service === "style.css") {
+	result.status = 200;
+	
+	fs.readFile("../html/style.css", function(err, css){
+	    if(err){
+		throw err;
+	    }
+	    result.contentType = "text/css";
+	    result.data = css;		
+	    callback(result);
+	})
+
+        return;        
+    };
+
     // Handle requests of our type
     if (pathParts.length >= 3) {
         var fun = pathParts[2];
