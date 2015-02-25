@@ -33,7 +33,11 @@ var start = function(route, handlers, port) {
                     response.writeHead(result.status, {"Content-Type": result.contentType})
 
                     if (result.contentType  == "application/json") {
-	                response.write(JSON.stringify({ data: result.data }));
+                        try {
+	                    response.write(JSON.stringify({ data: result.data }));
+                        } catch (er) {
+                            console.log(er);
+                        }
                     } else {
                         response.write(result.data);
                     }
