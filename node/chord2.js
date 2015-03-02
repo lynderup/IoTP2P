@@ -34,9 +34,9 @@ var Chord = function (ip, port, key, m, k) {
     };
 
     this.find_predecessor = function(id, callback) {
-        if (thisNode.in_interval(id, thisNode.key, thisNode.successor.key)) {
-            callback(thisNode);
-        } else {
+      if (thisNode.in_interval(id, thisNode.key, thisNode.successor.key)) {
+        callback(thisNode);
+      } else {
             //node.closest_preceding_finger(id).find_predecessor(callback);
             thisNode.successor.find_predecessor(id, function(node, err) {
                 if (node) {

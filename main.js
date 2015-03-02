@@ -79,12 +79,13 @@ var activeNodes = [];
 var servers = [];
 var serverNames = [];
 var basePort = 49152;
+var lastPort = basePort;
 
 var startServers = function(count) {
   count = count || 1;
 
   for (var i = 0; i<count; i++) {
-    var localPort = basePort+i;
+    var localPort = lastPort++;
     var key = computeKey(ip, localPort);
     var chordNode = new chord.Chord(ip, localPort, key, m, k);
 

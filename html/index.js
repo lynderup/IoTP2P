@@ -4,7 +4,7 @@ function init() {
     var findNode = $("#findNode");
     var inputId = $("#inputId");
     var nodeId = $("#nodeId");
-    var fingerTable = $("#fingerTable");
+    var fingerTable = $("#fingerTable tbody");
 
 
     $.ajax({
@@ -64,7 +64,8 @@ function init() {
         }).success(function(data){
           fingerTable.empty();
           var fingers = data.data;
-          var i;
+          var i, $rowData;
+
           for (i = 0; i < fingers.length; i++) {
             var finger = fingers[i];
             var $row = $("<tr />");
@@ -72,25 +73,15 @@ function init() {
               html: i
             });
             $row.append($rowContent);
-            var $rowData;
+
             if(finger) {
-              $rowData += $("<td />", {
+              $rowData = $("<td />", {
                 html: finger.key
               });
-
-              var $extraRow = $("<tr />");
-              $extraRow.append($("<td />", {
-                html: "Hashed key"
-              }));
-              $extraRow.append($("<td />"), {
-                html: finger.key
-              });
-
               $row.append($rowData);
               fingerTable.append($row);
-              fingerTable.append($extraRow);
             } else {
-              $rowData += $("<td />", {
+              $rowData = $("<td />", {
                 html: "null"
               });
 
