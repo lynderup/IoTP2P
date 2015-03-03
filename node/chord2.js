@@ -1,7 +1,7 @@
 /*global nodeToSimple */
 var remoteNode = require('./RemoteNode');
 
-var Chord = function (ip, port, key, m, k) {
+var Chord = function (ip, port, key, m, k, logger) {
     this.fingers = new Array(m);
     //this.successor = null;
     this.predecessor= null;
@@ -17,6 +17,9 @@ var Chord = function (ip, port, key, m, k) {
     this.fixFingersTimer = null;
 
     var thisNode = this;
+    if (!logger) {
+        logger = console;
+    }
 
     this.get_successor =  function(callback) {
         callback(thisNode.fingers[0]);
@@ -34,7 +37,7 @@ var Chord = function (ip, port, key, m, k) {
             } else {
                 callback(null, err);
                 //Error
-                console.log("Error in find_successor");
+                logger.log("Error in find_successor");
             }
         });
     };
@@ -50,7 +53,7 @@ var Chord = function (ip, port, key, m, k) {
                 } else {
                     callback(null, err);
                     //finger is probable lost
-                    //console.log("Error in find_predecessor");
+                    logger.log("Error in find_predecessor");
                 }
             });
         }
@@ -73,11 +76,11 @@ var Chord = function (ip, port, key, m, k) {
 
     this.join = function(node) {
         if (node) {
-            //console.log("join with " + node.key);
+            logger.log("join with " + node.key);
             thisNode.init(node)
 	    // move keys in (predecessor, node] from successor
         } else {
-            //console.log("Starting new Chord ring");
+            logger.log("Starting new Chord ring");
             //thisNode.successor = thisNode;
             thisNode.fingers[0] = thisNode
 	    thisNode.predecessor = thisNode;
@@ -98,7 +101,7 @@ var Chord = function (ip, port, key, m, k) {
                         thisNode.stabilize();
                     } else {
                         //Something wrong with preNode
-                        //console.log("Error - init - get_successor");
+                        logger.log("Error - init - get_successor");
                     }
                 });
                 preNode.get_fingers(function(fingers, err) {
@@ -111,7 +114,7 @@ var Chord = function (ip, port, key, m, k) {
                 });
             } else {
                 //Something wrong with node
-                //console.log("Error in init");
+                logger.log("Error in init");
             }
         });
     };
@@ -126,12 +129,12 @@ var Chord = function (ip, port, key, m, k) {
                     }
                     thisNode.fingers[0].notify(thisNode, function(_, err) {
                         if (err) {
-                            //console.log("Error can't notify successor");
+                            logger.log("Error can't notify successor");
                         }
                     });
                 } else {
                     //Something wrong with successor
-                    //console.log("Error - successor gone");
+                    logger.log("Error - successor gone");
                     thisNode.fingers[0] = thisNode.predecessor;
                 }
             });
@@ -147,7 +150,7 @@ var Chord = function (ip, port, key, m, k) {
                     //Chord.predecessor
                 } else {
                     //Something wrong with predecessor
-                    //console.log("Error - predecessor gone")
+                    logger.log("Error - predecessor gone")
                     thisNode.predecessor = thisNode.fingers[0];
                 }
             });
