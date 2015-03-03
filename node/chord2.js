@@ -114,6 +114,7 @@ var Chord = function (ip, port, key, m, k, logger) {
                 });
             } else {
                 //Something wrong with node
+                logger.log(err);
                 logger.log("Error in init");
             }
         });

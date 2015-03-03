@@ -1,7 +1,7 @@
-var server = require('./server');
-var router = require('./router');
-var chord = require('./chord2');
-var remoteNode = require('./RemoteNode');
+var server = require('./node/server');
+var router = require('./node/router');
+var chord = require('./node/chord2');
+var remoteNode = require('./node/RemoteNode');
 var crypto = require('crypto');
 
 var shasummer = function(data) {

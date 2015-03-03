@@ -33,6 +33,7 @@ var requestTemplate = function(fun, data, method, ip, port, callback) {
                   res.setEncoding('utf8');
                        if(callback) {
                            var recievedData = "";
+                           var end = 0;
                            res.on('data', function (chunk) {
                                recievedData += chunk;
                                //console.log('Response: ' + chunk);

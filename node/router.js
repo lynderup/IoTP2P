@@ -61,6 +61,7 @@ var route = function(pathname, handlers, data, callback) {
         if (fun.length === 0) {
             result.status = 404;
             result.message = "Zero length function recieved, please provide a function as: host/{service}/{function}";
+            callback(result);
         } else {
             var serviceImpl = handlers[service];
             if (serviceImpl) {
@@ -84,18 +85,17 @@ var route = function(pathname, handlers, data, callback) {
                 } else {
                     result.status = 404;
                     result.message = "The requested function '" + fun + "' doesn't exist or is not a function.";
+                    callback(result);
                 }
             } else {
                 result.status = 404;
                 result.message = "Service '" + service + "' is unknown to the system.";
+                callback(result);
             }
         }
     } else {
         result.status = 404;
         result.message = "Wrong length recieved, not a valid url. Please request as: host/{service}/{function}";
-    }
-
-    if(result.status != 200) {
         callback(result);
     }
 };
