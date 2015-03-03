@@ -1,10 +1,13 @@
 /*global nodeToSimple */
 var remoteNode = require('./RemoteNode');
+var http = require('http');
 
 var Chord = function (ip, port, key, m, k, logger) {
     this.fingers = new Array(m);
     //this.successor = null;
-    this.predecessor= null;
+    this.predecessor = null;
+
+    this.applications = [];
 
     this.ip = ip;
     this.port = port;
@@ -196,12 +199,56 @@ var Chord = function (ip, port, key, m, k, logger) {
             }
         }
         return (low < key && key <= high);
-    }
+    };
 
     this.close = function() {
         clearTimeout(thisNode.fixFingersTimer);
         clearTimeout(thisNode.stabilizeTimer);
-    }
+    };
+
+    //Application layer methods
+    this.get_apps = function(callback) {
+        var apps = [];
+        var applications = thisNode.applications;
+        logger.log("test");
+        logger.log(applications);
+        for(var i = 0; i < applications.length; i++) {
+            if (applications[i]) {
+                apps.push(applications[i]);
+            }
+        }
+        callback(apps);
+    };
+
+    this.register_app = function(url) {
+        http.get(url, function(res) {
+            logger.log("Got response: " + res.statusCode);
+            var recievedData = "";
+            res.on('data', function (chunk) {
+                recievedData += chunk;
+            });
+            res.on('end', function() {
+                var data = JSON.parse(recievedData);
+                logger.log(data);
+                var key = data.key
+                if(key) {
+                    if (thisNode.in_interval(key, thisNode.predecessor.key, thisNode.key)) {
+                        thisNode.applications.push(data);
+                    } else {
+                        thisNode.find_successor(key, function(node, err) {
+                            if (node) {
+                                node.register_app(url);
+                            }
+                        });
+                    }
+                } else {
+                    logger.log("No app found on: " + url);
+                }
+            });
+        }).on('error', function(e) {
+            logger.log("App not found");
+        });
+    };
 }
 
 var ChordProxy = function(node) {
@@ -237,6 +284,13 @@ var ChordProxy = function(node) {
     this.notify = function(data, callback) {
         var rnode = new remoteNode.Node(data.node.ip, data.node.port, data.node.key);
         node.notify(rnode);
+        callback();
+    };
+    this.get_apps = function(data, callback) {
+        node.get_apps(callback);
+    };
+    this.register_app = function(data, callback) {
+        node.register_app(data.url);
         callback();
     };
 
