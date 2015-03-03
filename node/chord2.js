@@ -37,8 +37,8 @@ var Chord = function (ip, port, key, m, k) {
                 console.log("Error in find_successor");
             }
         });
-    }; 
-    
+    };
+
     this.find_predecessor = function(id, callback) {
         if (thisNode.in_interval(id, thisNode.key, thisNode.fingers[0].key)) {
             callback(thisNode);
@@ -50,7 +50,7 @@ var Chord = function (ip, port, key, m, k) {
                 } else {
                     callback(null, err);
                     //finger is probable lost
-                    console.log("Error in find_predecessor");
+                    //console.log("Error in find_predecessor");
                 }
             });
         }
@@ -73,11 +73,11 @@ var Chord = function (ip, port, key, m, k) {
 
     this.join = function(node) {
         if (node) {
-            console.log("join with " + node.key);
+            //console.log("join with " + node.key);
             thisNode.init(node)
 	    // move keys in (predecessor, node] from successor
         } else {
-            console.log("Starting new Chord ring");
+            //console.log("Starting new Chord ring");
             //thisNode.successor = thisNode;
             thisNode.fingers[0] = thisNode
 	    thisNode.predecessor = thisNode;
@@ -98,7 +98,7 @@ var Chord = function (ip, port, key, m, k) {
                         thisNode.stabilize();
                     } else {
                         //Something wrong with preNode
-                        console.log("Error - init - get_successor");
+                        //console.log("Error - init - get_successor");
                     }
                 });
                 preNode.get_fingers(function(fingers, err) {
@@ -106,12 +106,12 @@ var Chord = function (ip, port, key, m, k) {
                         thisNode.fingers = fingers;
                         thisNode.fix_fingers();
                     } else {
-                        console.log("Error - init - get_fingers");
+                        //console.log("Error - init - get_fingers");
                     }
                 });
             } else {
                 //Something wrong with node
-                console.log("Error in init");
+                //console.log("Error in init");
             }
         });
     };
@@ -121,36 +121,36 @@ var Chord = function (ip, port, key, m, k) {
             thisNode.fingers[0].get_predecessor(function(node, err) {
                 if(node) {
                     if(thisNode.in_interval(node.key, thisNode.key, thisNode.fingers[0].key)) {
-                        console.log(node.key + " is now my successor");
+                        //console.log(node.key + " is now my successor");
                         thisNode.fingers[0] = node;
                     }
                     thisNode.fingers[0].notify(thisNode, function(_, err) {
                         if (err) {
-                            console.log("Error can't notify successor");
+                            //console.log("Error can't notify successor");
                         }
                     });
                 } else {
                     //Something wrong with successor
-                    console.log("Error - successor gone");
+                    //console.log("Error - successor gone");
                     thisNode.fingers[0] = thisNode.predecessor;
                 }
-            })
+            });
         }
         if (thisNode.predecessor) {
             thisNode.predecessor.get_successor(function(node, err) {
                 if(node) {
                     if(thisNode.in_interval(node.key, thisNode.predecessor.key, thisNode.key)
                      && node.key != thisNode.key) {
-                        console.log(node.key + " is now my predecessor");
+                        //console.log(node.key + " is now my predecessor");
                         thisNode.predecessor = node;
                     }
                     //Chord.predecessor
                 } else {
                     //Something wrong with predecessor
-                    console.log("Error - predecessor gone")
+                    //console.log("Error - predecessor gone")
                     thisNode.predecessor = thisNode.fingers[0];
                 }
-            })
+            });
         }
         thisNode.stabilizeTimer = setTimeout(thisNode.stabilize, 1000);
     };
@@ -158,7 +158,7 @@ var Chord = function (ip, port, key, m, k) {
     this.notify = function(node) {
         //console.log("Notified with: " + node.key);
         if(thisNode.in_interval(node.key, thisNode.predecessor.key, thisNode.key)) {
-            console.log(node.key + " is now my predecessor");
+            //console.log(node.key + " is now my predecessor");
             thisNode.predecessor = node;
         }
     };
@@ -174,7 +174,7 @@ var Chord = function (ip, port, key, m, k) {
                 thisNode.fingers[i] = node;
             });
         })(index);
-        
+
         index = (index + 1) % thisNode.m;
         thisNode.fixFingersTimer = setTimeout(thisNode.fix_fingers, 1000);
     };
