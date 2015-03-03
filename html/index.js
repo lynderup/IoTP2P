@@ -6,6 +6,7 @@ function init() {
     var nodeId = $("#nodeId");
     var fingerTable = $("#fingerTable tbody");
 
+    var key = 0;
 
     $.ajax({
         url : "/chord/get_key",
@@ -15,10 +16,12 @@ function init() {
         updateData(data.data);
     }).error(function(data){});
 
-    function updateData(key){
+    function updateData(k){
         // findPredesessor.attr("href", node.predesessorLink);
         // findSuccessor.attr("href", node.sucessorLink);
-        nodeId.text(key);
+        console.log(parseInt(k));
+        key = parseInt(k);
+        nodeId.text(k);
     }
 
     findNode.on("click", function(){
@@ -62,33 +65,35 @@ function init() {
             type : "GET",
             ContentType : "application/json"
         }).success(function(data){
-          fingerTable.empty();
-          var fingers = data.data;
-          var i, $rowData;
+            fingerTable.empty();
+            var fingers = data.data;
+            var i, $rowData;
 
-          for (i = 0; i < fingers.length; i++) {
-            var finger = fingers[i];
-            var $row = $("<tr />");
-            var $rowContent = $("<td />", {
-              html: i
-            });
-            $row.append($rowContent);
+            for (i = 0; i < fingers.length; i++) {
+                var finger = fingers[i];
+                var $row = $("<tr />");
+                var $rowContent = $("<td />", {
+                    html: i
+                });
+                $row.append($rowContent);
+                console.log(key);
+                var $fingerKey = $("<td />", {
+                    html: (Math.pow(2, i) + key) % Math.pow(2, fingers.length)
+                });
+                $row.append($fingerKey);
 
-            if(finger) {
-              $rowData = $("<td />", {
-                html: finger.key
-              });
-              $row.append($rowData);
-              fingerTable.append($row);
-            } else {
-              $rowData = $("<td />", {
-                html: "null"
-              });
-
-              $row.append($rowData);
-              fingerTable.append($row);
+                if(finger) {
+                    $rowData = $("<td />", {
+                        html: finger.key
+                    });
+                } else {
+                    $rowData = $("<td />", {
+                        html: "null"
+                    });
+                }
+                $row.append($rowData);
+                fingerTable.append($row);
             }
-          }
         }).error(function(data){});
 
         setTimeout(updataFingerTable, 1000);
