@@ -1,17 +1,8 @@
-var foo = function(post, get) {
-  console.log("Foo reached");
+var test = {test: "test"};
 
-  if (post) {
-    console.log("Post data present");
-    console.log(JSON.stringify(post));
-  }
+var test2 = [];
+test2[0] = test;
 
-  if (get) {
-    console.log("Get data present");
-    console.log(JSON.stringify(get));
-  }
+test = {test: "test2"};
 
-  return { get: get, post: post };
-};
-
-exports.foo = foo;
+console.log(test2);

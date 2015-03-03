@@ -12,7 +12,7 @@ var route = function(pathname, handlers, data, callback) {
     if (service === "index.html" || service === "") {
 	result.status = 200;
 	
-	fs.readFile("../html/index.html", function(err, html){
+	fs.readFile("./html/index.html", function(err, html){
 	    if(err){
 		throw err;
 	    }
@@ -27,12 +27,27 @@ var route = function(pathname, handlers, data, callback) {
     if (service === "index.js") {
 	result.status = 200;
 	
-	fs.readFile("../html/index.js", function(err, js){
+	fs.readFile("./html/index.js", function(err, js){
 	    if(err){
 		throw err;
 	    }
 	    result.contentType = "text/javascript";
 	    result.data = js;		
+	    callback(result);
+	})
+
+        return;        
+    };
+
+    if (service === "style.css") {
+	result.status = 200;
+	
+	fs.readFile("./html/style.css", function(err, css){
+	    if(err){
+		throw err;
+	    }
+	    result.contentType = "text/css";
+	    result.data = css;		
 	    callback(result);
 	})
 

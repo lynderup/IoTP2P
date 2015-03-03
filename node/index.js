@@ -1,7 +1,6 @@
 var server = require('./server');
 var router = require('./router');
 var chord = require('./chord2');
-var test = require('./test');
 var remoteNode = require('./RemoteNode');
 var crypto = require('crypto');
 
