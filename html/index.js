@@ -6,6 +6,10 @@ function init() {
     var nodeId = $("#nodeId");
     var fingerTable = $("#fingerTable tbody");
 
+    var registerApp = $("#registerApp");
+    var appUrl = $("#appUrl");
+    var apps = $("#apps");
+
     var key = 0;
 
     $.ajax({
@@ -59,7 +63,45 @@ function init() {
         }).error(function(data){});
     });
 
-    function updataFingerTable() {
+    registerApp.on("click", function() {
+        $.ajax({
+	    url : "/chord/register_app?url=" + appUrl.val(),
+	    type : "GET",
+	    ContentType : "application/json"
+        }).success(function(data){
+            
+        }).error(function(data){});
+    });
+
+    function updateApps() {
+        $.ajax({
+            url : "/chord/get_apps",
+            type : "GET",
+            ContentType : "application/json"
+        }).success(function(appList){
+            apps.empty();
+            var appsList = appList.data;
+            for (var i = 0; i < appsList.length; i++) {
+                var app = appsList[i];
+                var $app = $("<div />");
+                var $appName = $("<b />",{
+                    html : app.name
+                });
+                $app.append($appName);
+                var $appContent = $("<div />",{
+                    html : app.content
+                });
+                $app.append($appContent);
+                apps.append($app);
+            }
+        }).error(function(data){});
+        
+
+        setTimeout(updateApps, 1000);
+    };
+    updateApps();
+
+    function updateFingerTable() {
         $.ajax({
             url : "/chord/get_fingers",
             type : "GET",
@@ -96,7 +138,7 @@ function init() {
             }
         }).error(function(data){});
 
-        setTimeout(updataFingerTable, 1000);
+        setTimeout(updateFingerTable, 1000);
     };
-    updataFingerTable();
+    updateFingerTable();
 }
