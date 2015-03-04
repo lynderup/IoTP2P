@@ -1,5 +1,5 @@
 double temperature = 0.0;
-int out = 0.0;
+int light = 0;
 
 int humidity = 0;
 int temperatureFromDht = 0;
@@ -13,28 +13,37 @@ const int TEMPERATURE = A3;
 const int PHOTORESISTOR = A5;
 const int DHT11 = D0;
 
+char chordRegister[2048] = "";
+char getData[2048] = "";
+
 void setup() {
   Spark.variable("temperature", &temperature, DOUBLE);
-  Spark.variable("out", &out, INT);
-  Spark.variable("humidity", &humidity, INT);
-  Spark.variable("temperatureFromDht", &temperatureFromDht, INT);
+  Spark.variable("light", &light, INT);
+  // Spark.variable("humidity", &humidity, INT);
+  // Spark.variable("temperatureFromDht", &temperatureFromDht, INT);
+
+  Spark.variable("register", &chordRegister, STRING);
+  Spark.variable("getData", &getData, STRING);
 
   pinMode(TEMPERATURE, INPUT);
   pinMode(PHOTORESISTOR, INPUT);
-  pinMode(DHT11, OUTPUT);
-  digitalWrite(DHT11, HIGH);
+  // pinMode(DHT11, OUTPUT);
+  // digitalWrite(DHT11, HIGH);
 
   pinMode(RED_LED_PIN, OUTPUT);
   pinMode(GREEN_LED_PIN, OUTPUT);
   pinMode(BLUE_LED_PIN, OUTPUT);
+
+  updateChordRegister();
+  updateGetData();
 }
 
 void loop() {
-  if (millis()-ms > 10000) {
-    int dht = readDht11();
-    if (dht == -1) humidity = -1;
-    ms = millis();
-  }
+  //if (millis()-ms > 10000) {
+    //int dht = readDht11();
+    //if (dht == -1) humidity = -1;
+    //ms = millis();
+    //}
 
   int temperatureReading = 0;
   double voltage = 0.0;
@@ -62,11 +71,12 @@ void loop() {
   greenAdj = greenAdj*6.7;
 
   // Log before normalizing on the cap, to see how close we actually are :)
-  out = greenAdj;
+  light = greenAdj;
 
   if (greenAdj >= 255) greenAdj = 255;
   analogWrite(GREEN_LED_PIN, greenAdj);
 
+  updateGetData();
   delay(500);
 }
 
@@ -128,4 +138,24 @@ int detect_edge(int pin, int val, int interval, int timeout) {
   }
 
   return counter;
+}
+
+void updateChordRegister() {
+  int key = 42;
+  String name = "Rohde er gud";
+
+  String accessToken = "fca18535974a364f88989f51ac2ef84dd91a8285";
+  String deviceId = "54ff6f066678574950300667";
+  char contentUrl[256];
+  sprintf(contentUrl, "https://api.spark.io/v1/devices/%s/getData?access_token=%s", deviceId.c_str(), accessToken.c_str());
+
+  String str = "{\"key\": \"%d\", \"name\": \"%s\", \"contentUrl\": \"%s\"}";
+
+  sprintf(chordRegister, str.c_str(), key, name.c_str(), contentUrl);
+}
+
+void updateGetData() {
+  // Return json
+  String str = "{\"temperature\": \"%f\", \"light\": \"%d\"}";
+  sprintf(getData, str.c_str(), temperature, light);
 }
