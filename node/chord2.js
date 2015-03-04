@@ -1,6 +1,6 @@
 /*global nodeToSimple */
 var remoteNode = require('./RemoteNode');
-var http = require('http');
+var http = require('https');
 
 var Chord = function (ip, port, key, m, k, logger) {
     this.fingers = new Array(m);
@@ -232,7 +232,7 @@ var Chord = function (ip, port, key, m, k, logger) {
                         recievedData += chunk;
                     });
                     res.on('end', function() {
-                        app.content = recievedData;
+                        app.content = JSON.parse(recievedData).result;
                         thisNode.getContent(apps, i+1, function(res){
                             res.push(app);
                             con(res);
@@ -251,9 +251,11 @@ var Chord = function (ip, port, key, m, k, logger) {
                 recievedData += chunk;
             });
             res.on('end', function() {
-                var data = JSON.parse(recievedData);
+                var data = JSON.parse(JSON.parse(recievedData).result);
                 logger.log(data);
-                var key = data.key
+                logger.log(typeof data);
+                logger.log(data.key);
+                var key = parseInt(data.key)
                 if(key) {
                     if (thisNode.in_interval(key, thisNode.predecessor.key, thisNode.key)) {
                         thisNode.applications.push(data);

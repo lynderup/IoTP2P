@@ -7,9 +7,11 @@ http.createServer(function(request, response) {
     if (pathname == "/app") {
         response.writeHeader(200, {"Content-Type": "application/json"})
         var data = {
-            key : 500,
-            name : "Test App",
-            contentUrl : "http://localhost:8090/data"
+            result : {
+                key : 500,
+                name : "Test App",
+                contentUrl : "http://localhost:8090/data"
+            }
         }
         response.write(JSON.stringify(data))
         
