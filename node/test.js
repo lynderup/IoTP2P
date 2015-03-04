@@ -9,16 +9,15 @@ http.createServer(function(request, response) {
         var data = {
             key : 500,
             name : "Test App",
-            content : "testtest",
-            appurl : "http://localhost:8090/data"
+            contentUrl : "http://localhost:8090/data"
         }
         response.write(JSON.stringify(data))
         
     }
-    else if (pathname == "/app") {
+    else if (pathname == "/data") {
         response.writeHeader(200, {"Content-Type": "application/json"})
         var data = {
-            data : "testtest"
+            data : "testdata"
         }
         response.write(JSON.stringify(data))
     }

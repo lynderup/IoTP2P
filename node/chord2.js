@@ -208,16 +208,39 @@ var Chord = function (ip, port, key, m, k, logger) {
 
     //Application layer methods
     this.get_apps = function(callback) {
-        var apps = [];
+        //var apps = [];
         var applications = thisNode.applications;
         logger.log("test");
         logger.log(applications);
-        for(var i = 0; i < applications.length; i++) {
+        /*for(var i = 0; i < applications.length; i++) {
             if (applications[i]) {
                 apps.push(applications[i]);
             }
+        }*/
+        thisNode.getContent(applications, 0, callback);
+    };
+    this.getContent = function(apps, i, con) {
+        if(i == apps.length) {
+            var res = [];
+            con(res)
+        } else {
+            var app = apps[i];
+            if (app) {
+                http.get(app.contentUrl, function(res) {
+                    var recievedData = "";
+                    res.on('data', function (chunk) {
+                        recievedData += chunk;
+                    });
+                    res.on('end', function() {
+                        app.content = recievedData;
+                        thisNode.getContent(apps, i+1, function(res){
+                            res.push(app);
+                            con(res);
+                        });
+                    });
+                }).on('error', function(e) {});
+            }
         }
-        callback(apps);
     };
 
     this.register_app = function(url) {

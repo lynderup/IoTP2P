@@ -118,7 +118,10 @@ var Node = function(ip, port, key) {
                 callback(null, err);
             }
         });
-    }
+    };
+    this.register_app = function(url, callback) {
+        requestTemplate("register_app", { url: url }, "GET", ip, port, callback);
+    };
 }
 var dummy = new Node("127.0.0.1","4321","42");
 
