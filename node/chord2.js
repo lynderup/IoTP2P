@@ -1,13 +1,14 @@
 /*global nodeToSimple */
 var remoteNode = require('./RemoteNode');
 var http = require('https');
+var application = require('./Application');
 
 var Chord = function (ip, port, key, m, k, logger) {
     this.fingers = new Array(m);
     //this.successor = null;
     this.predecessor = null;
 
-    this.applications = [];
+    this.applicationLayer = new application.Application();
 
     this.ip = ip;
     this.port = port;
@@ -311,11 +312,13 @@ var ChordProxy = function(node) {
         node.notify(rnode);
         callback();
     };
+
+    //Applications layer functions
     this.get_apps = function(data, callback) {
-        node.get_apps(callback);
+        node.applicationLayer.get_apps(callback);
     };
     this.register_app = function(data, callback) {
-        node.register_app(data.url);
+        node.applicationLayer.register_app(data.url);
         callback();
     };
 
