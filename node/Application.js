@@ -25,11 +25,13 @@ var Application = function(node) {
               recievedData += chunk;
             });
             res.on('end', function() {
-              var data = JSON.parse(JSON.parse(recievedData).result);
-              data.time = Date.now();
-              console.log(data);
-              dataSource.data.push(data);
-              visit(i + 1);
+              if (res.statusCode == 200) {
+                var data = JSON.parse(JSON.parse(recievedData).result);
+                data.time = Date.now();
+                console.log(data);
+                dataSource.data.push(data);
+                visit(i + 1);
+              };
             });
           }).on('error', function(e) {});
         }
@@ -55,22 +57,24 @@ var Application = function(node) {
         recievedData += chunk;
       });
       res.on('end', function() {
-        console.log(recievedData)
-        var data = JSON.parse(JSON.parse(recievedData).result);
-        var key = parseInt(data.key)
-        if (key) {
-          if (localNode.in_interval(key, localNode.predecessor.key,
-              localNode.key)) {
-            thisApp.addSource(data);
+        if (res.statusCode == 200) {
+          console.log(recievedData)
+          var data = JSON.parse(JSON.parse(recievedData).result);
+          var key = parseInt(data.key)
+          if (key) {
+            if (localNode.in_interval(key, localNode.predecessor.key,
+                localNode.key)) {
+              thisApp.addSource(data);
+            } else {
+              localNode.find_successor(key, function(node, err) {
+                if (node) {
+                  node.addSource(data);
+                }
+              });
+            }
           } else {
-            localNode.find_successor(key, function(node, err) {
-              if (node) {
-                node.addSource(data);
-              }
-            });
+            //logger.log("No app found on: " + url);
           }
-        } else {
-          //logger.log("No app found on: " + url);
         }
       });
     }).on('error', function(e) {
@@ -80,4 +84,4 @@ var Application = function(node) {
 
 };
 
-exports.Application = Application;
+exports.Application = Application
