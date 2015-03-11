@@ -1,4 +1,4 @@
-var https = require('http');
+var https = require('https');
 
 
 var Application = function(node) {
@@ -26,8 +26,9 @@ var Application = function(node) {
                             recievedData += chunk;
                         });
                         res.on('end', function() {
-                            var data = JSON.parse(recievedData).result;
+                            var data = JSON.parse(JSON.parse(recievedData).result);
                             data.time = Date.now();
+                            console.log(data);
                             dataSource.data.push(data);
                             visit(i+1);
                         });
@@ -55,6 +56,7 @@ var Application = function(node) {
                 recievedData += chunk;
             });
             res.on('end', function() {
+                console.log(recievedData)
                 var data = JSON.parse(JSON.parse(recievedData).result);
                 var key = parseInt(data.key)
                 if(key) {
