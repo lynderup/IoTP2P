@@ -80,4 +80,4 @@ var Application = function(node) {
 
 };
 
-exports.Application = Application >>> >>> > 7e e6fee28ef70dc6f14b47362b370ad9585e29fa
+exports.Application = Application;

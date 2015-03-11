@@ -166,7 +166,9 @@ function init() {
       .range([height, 0]);
 
     var xAxis = d3.svg.axis()
-      .scale(x)
+      .scale(x).tickFormat(function(d) {
+        return GetTime(d);
+      })
       .orient("bottom");
 
     var yAxis = d3.svg.axis()
@@ -196,7 +198,6 @@ function init() {
     }));
 
     y.domain(d3.extent(foos, function(d) {
-      console.log(d.temperature);
       return d.temperature;
     }));
 
@@ -226,20 +227,22 @@ function init() {
       .attr("class", "line")
       .attr("d", line);
   }
-}
 
+  function GetTime(timestamp) {
 
-function getTime(timestamp) {
-  var date = new Date(timestamp);
-  // hours part from the timestamp
-  var hours = date.getHours();
-  // minutes part from the timestamp
-  var minutes = "0" + date.getMinutes();
-  // seconds part from the timestamp
-  var seconds = "0" + date.getSeconds();
+    var date = new Date(timestamp);
+    // hours part from the timestamp
+    var hours = date.getHours();
+    // minutes part from the timestamp
+    var minutes = "0" + date.getMinutes();
+    // seconds part from the timestamp
+    var seconds = "0" + date.getSeconds();
 
-  // will display time in 10:30:23 format
-  var formattedTime = hours + ':' + minutes.substr(minutes.length - 2) + ':' +
-    seconds.substr(seconds.length - 2);
-  return formattedTime;
+    // will display time in 10:30:23 format
+    var formattedTime = hours + ':' + minutes.substr(minutes.length - 2) +
+      ':' +
+      seconds.substr(seconds.length - 2);
+    return formattedTime;
+  }
+
 }
