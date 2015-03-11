@@ -23,7 +23,7 @@ function init() {
     function updateData(k){
         // findPredesessor.attr("href", node.predesessorLink);
         // findSuccessor.attr("href", node.sucessorLink);
-        console.log(parseInt(k));
+        //console.log(parseInt(k));
         key = parseInt(k);
         nodeId.text(k);
     }
@@ -35,7 +35,7 @@ function init() {
 	        type : "GET",
 	        ContentType : "application/json"
 	    }).success(function(data){
-	        console.log(data.data.ip +":" +data.data.port + "/" + "index.html");
+	        //console.log(data.data.ip +":" +data.data.port + "/" + "index.html");
 	        window.location = "http://"+data.data.ip +":" +data.data.port + "/" + "index.html";
 	    }).error(function(data){});
         }
@@ -88,8 +88,9 @@ function init() {
                     html : app.name
                 });
                 $app.append($appName);
+                console.log(app.data);
                 var $appContent = $("<div />",{
-                    html : app.content
+                    html : app.data
                 });
                 $app.append($appContent);
                 apps.append($app);
@@ -118,7 +119,7 @@ function init() {
                     html: i
                 });
                 $row.append($rowContent);
-                console.log(key);
+                //console.log(key);
                 var $fingerKey = $("<td />", {
                     html: (Math.pow(2, i) + key) % Math.pow(2, fingers.length)
                 });

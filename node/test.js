@@ -7,11 +7,11 @@ http.createServer(function(request, response) {
     if (pathname == "/app") {
         response.writeHeader(200, {"Content-Type": "application/json"})
         var data = {
-            result : {
+            result : JSON.stringify({
                 key : 500,
                 name : "Test App",
                 contentUrl : "http://localhost:8090/data"
-            }
+            })
         }
         response.write(JSON.stringify(data))
         
@@ -19,7 +19,9 @@ http.createServer(function(request, response) {
     else if (pathname == "/data") {
         response.writeHeader(200, {"Content-Type": "application/json"})
         var data = {
-            data : "testdata"
+            result : {
+                temp : 20.7
+            }
         }
         response.write(JSON.stringify(data))
     }

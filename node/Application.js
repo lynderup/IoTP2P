@@ -1,4 +1,4 @@
-var https = require('https');
+var https = require('http');
 
 
 var Application = function(node) {
@@ -6,13 +6,15 @@ var Application = function(node) {
     var localNode = node;
     var dataSources = [];
     var updateDataTimer = null;
+    var thisApp = this;
 
     this.addSource = function(source) {
+        source.data = [];
         dataSources.push(source);
     };
 
 
-    this.updateData = function() {
+    var updateData = function() {
         var visit = function(i) {
             if(i == dataSources.length) {
             } else {
@@ -26,7 +28,7 @@ var Application = function(node) {
                         res.on('end', function() {
                             var data = JSON.parse(recievedData).result;
                             data.time = Date.now();
-                            dataSource.data.push();
+                            dataSource.data.push(data);
                             visit(i+1);
                         });
                     }).on('error', function(e) {});
@@ -34,9 +36,9 @@ var Application = function(node) {
             }
         }
         visit(0);
-        updateDataTimer = setTimeout(this.updateData, 1000);
+        updateDataTimer = setTimeout(updateData, 1000);
     };
-    this.updateData();
+    updateData();
     
     this.close = function() {
         clearTimeout(updateDataTimer);
@@ -57,7 +59,7 @@ var Application = function(node) {
                 var key = parseInt(data.key)
                 if(key) {
                     if (localNode.in_interval(key, localNode.predecessor.key, localNode.key)) {
-                        dataSources.push(data);
+                        thisApp.addSource(data);
                     } else {
                         localNode.find_successor(key, function(node, err) {
                             if (node) {

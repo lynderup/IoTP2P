@@ -79,20 +79,6 @@ var Node = function(ip, port, key) {
                         "GET", ip, port, augmentCallbackToCreateNode(callback));
     };
 
-/*
-    this.closest_preceding_finger = function(id, callback) {
-        requestTemplate("closest_preceding_finger", {id: id},
-                        "GET", ip, port, augmentCallbackToCreateNode(callback));
-    };
-    
-
-    // s is of type node
-    this.update_finger_table = function(node, i) {
-        requestTemplate("update_finger_table", "",
-                        { node: nodeToJSON(node), index: i }, "POST", ip, port);
-    };
-*/
-
     this.notify = function(node, callback) {
         requestTemplate("notify", { node: nodeToSimple(node) }, "POST", ip, port, callback);
     };
@@ -119,8 +105,11 @@ var Node = function(ip, port, key) {
             }
         });
     };
-    this.register_app = function(url, callback) {
+    /*this.register_app = function(url, callback) {
         requestTemplate("register_app", { url: url }, "GET", ip, port, callback);
+    };*/
+    this.addSource = function(source, callback) {
+        requestTemplate("addSource", source, "POST", ip, port, callback);
     };
 }
 var dummy = new Node("127.0.0.1","4321","42");

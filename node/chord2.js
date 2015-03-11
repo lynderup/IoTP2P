@@ -8,7 +8,7 @@ var Chord = function (ip, port, key, m, k, logger) {
     //this.successor = null;
     this.predecessor = null;
 
-    this.applicationLayer = new application.Application();
+    this.applicationLayer = new application.Application(this);
 
     this.ip = ip;
     this.port = port;
@@ -203,77 +203,9 @@ var Chord = function (ip, port, key, m, k, logger) {
     };
 
     this.close = function() {
+        this.applicationLayer.close();
         clearTimeout(thisNode.fixFingersTimer);
         clearTimeout(thisNode.stabilizeTimer);
-    };
-
-    //Application layer methods
-    this.get_apps = function(callback) {
-        //var apps = [];
-        var applications = thisNode.applications;
-        logger.log("test");
-        logger.log(applications);
-        /*for(var i = 0; i < applications.length; i++) {
-            if (applications[i]) {
-                apps.push(applications[i]);
-            }
-        }*/
-        thisNode.getContent(applications, 0, callback);
-    };
-    this.getContent = function(apps, i, con) {
-        if(i == apps.length) {
-            var res = [];
-            con(res)
-        } else {
-            var app = apps[i];
-            if (app) {
-                http.get(app.contentUrl, function(res) {
-                    var recievedData = "";
-                    res.on('data', function (chunk) {
-                        recievedData += chunk;
-                    });
-                    res.on('end', function() {
-                        app.content = JSON.parse(recievedData).result;
-                        thisNode.getContent(apps, i+1, function(res){
-                            res.push(app);
-                            con(res);
-                        });
-                    });
-                }).on('error', function(e) {});
-            }
-        }
-    };
-
-    this.register_app = function(url) {
-        http.get(url, function(res) {
-            logger.log("Got response: " + res.statusCode);
-            var recievedData = "";
-            res.on('data', function (chunk) {
-                recievedData += chunk;
-            });
-            res.on('end', function() {
-                var data = JSON.parse(JSON.parse(recievedData).result);
-                logger.log(data);
-                logger.log(typeof data);
-                logger.log(data.key);
-                var key = parseInt(data.key)
-                if(key) {
-                    if (thisNode.in_interval(key, thisNode.predecessor.key, thisNode.key)) {
-                        thisNode.applications.push(data);
-                    } else {
-                        thisNode.find_successor(key, function(node, err) {
-                            if (node) {
-                                node.register_app(url);
-                            }
-                        });
-                    }
-                } else {
-                    logger.log("No app found on: " + url);
-                }
-            });
-        }).on('error', function(e) {
-            logger.log("App not found");
-        });
     };
 }
 
@@ -318,8 +250,11 @@ var ChordProxy = function(node) {
         node.applicationLayer.get_apps(callback);
     };
     this.register_app = function(data, callback) {
-        node.applicationLayer.register_app(data.url);
+        node.applicationLayer.register_source(data.url);
         callback();
+    };
+    this.addSource = function(source, callback) {
+        node.applicationLayer.addSource(source);
     };
 
     //Proxy only functions
