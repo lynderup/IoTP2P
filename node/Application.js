@@ -1,12 +1,17 @@
 var https = require('https');
-
+var sql = require('sqlite3');
 
 var Application = function(node) {
-
     var localNode = node;
     var dataSources = [];
     var updateDataTimer = null;
     var thisApp = this;
+    var db = new sql.Database(':memory:');
+
+    db.serialize(function() {
+        db.run('CREATE TABLE temperature (temperature DECIMAL, light INTEGER, time DATE);');
+    })
+    
 
     this.addSource = function(source) {
         source.data = [];
@@ -29,8 +34,13 @@ var Application = function(node) {
                             if(res.statusCode == 200) {
                                 var data = JSON.parse(JSON.parse(recievedData).result);
                                 data.time = Date.now();
-                                console.log(data);
+                                //console.log(data);
                                 dataSource.data.push(data);
+                                db.serialize(function() {
+                                    var stmt = db.prepare('INSERT INTO temperature (temperature, light, time) VALUES (?, ?, ?);');
+                                    stmt.run(data.temperature, data.light, data.time);
+                                    stmt.finalize();
+                                });
                                 visit(i+1);
                             };
                         });
@@ -45,6 +55,7 @@ var Application = function(node) {
     
     this.close = function() {
         clearTimeout(updateDataTimer);
+        db.close();
     };
 
     this.get_apps = function(callback) {
