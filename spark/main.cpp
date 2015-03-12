@@ -1,4 +1,6 @@
-//#define DHT 1
+#define DHT 1
+#include "application.h"
+#include "dht11.h"
 
 double temperature = 0.0;
 int light = 0;
@@ -17,6 +19,9 @@ const int DHT11 = D0;
 
 char chordRegister[2048] = "";
 char getData[2048] = "";
+
+void updateChordRegister();
+void updateGetData();
 
 void setup() {
 #ifdef DHT
@@ -94,72 +99,6 @@ void loop() {
   updateGetData();
   delay(250);
 }
-
-#ifdef DHT
-int readDht11(int pin, int *humidityI, int *temperatureI) {
-  uint8_t data[] = {0, 0, 0, 0, 0};
-  noInterrupts();
-
-//   // Initial protocol, rules are:
-//   // Go to LOW >= 18 ms then HIGH, tells DHT11 we want data
-//   // DHT11 responds low, high, low in 80 microsecond intervals
-//   // if we don't read that, we return with an error.
-  pinMode(pin, OUTPUT);
-  digitalWrite(pin, LOW);
-  delay(20);
-  pinMode(pin, INPUT_PULLUP);
-  if (detect_edge(pin, HIGH, 10, 200) == -1) {
-    return -1;
-  }
-  if (detect_edge(pin, LOW, 10, 200) == -1) {
-    return -1;
-  }
-  if (detect_edge(pin, HIGH, 10, 200) == -1) {
-    return -1;
-  }
-
-//   // Getting the data, whoa need to check the protocol here
-  for (uint8_t i = 0; i < 40; i++) {
-    if (detect_edge(pin, LOW, 10, 200) == -1) {
-      return -1;
-    }
-
-    int counter = detect_edge(pin, HIGH, 10, 200);
-    if (counter == -1)
-      return -1;
-
-    data[i/8] <<= 1;
-
-    if (counter > 4) {
-      data[i/8] |= 1;
-    }
-  }
-  interrupts();
-
-//   // Validate the data, last part is a checksum
-  if (data[4] != ((data[0]+data[1]+data[2]) & 0xFF))
-      return -1;
-
-  *humidityI = data[0];
-  *temperatureI = data[2];
-
-   return 0;
-}
-
-int detect_edge(int pin, int val, int interval, int timeout) {
-  int counter = 0;
-  while (digitalRead(pin) == val && counter < timeout) {
-    delayMicroseconds(interval);
-    ++counter;
-  }
-
-  if (counter > timeout) {
-    return -1;
-  }
-
-  return counter;
-}
-#endif
 
 void updateChordRegister() {
   int key = 42;

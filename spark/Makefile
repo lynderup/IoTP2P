@@ -1,5 +1,5 @@
 TARGET  = firmware.bin
-SOURCES = main.ino
+SOURCES = *.h *.cpp
 
 all : $(TARGET)
 
