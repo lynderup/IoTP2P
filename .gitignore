@@ -1,6 +1,7 @@
-
 # Emacs 
-
 *~
 *#*#
+
+# Misc
 *.bin
+node_modules
