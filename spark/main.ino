@@ -162,11 +162,20 @@ int detect_edge(int pin, int val, int interval, int timeout) {
 #endif
 
 void updateChordRegister() {
-  int key = 42;
-  String name = "Rohde er gud";
+  int key;
+  String name;
 
   String accessToken = "fca18535974a364f88989f51ac2ef84dd91a8285";
-  String deviceId = "54ff6f066678574950300667";
+  String deviceId;
+  #ifdef DHT
+  deviceId = "54ff6f066678574950300667";
+  key = 13;
+  name = "laser_penguin";
+  #else
+  deviceId = "53ff6f066667574830460967";
+  key = 42;
+  name = "SparkleParty";
+  #endif
   char contentUrl[256];
   sprintf(contentUrl, "https://api.spark.io/v1/devices/%s/getData?access_token=%s", deviceId.c_str(), accessToken.c_str());
 
@@ -177,6 +186,11 @@ void updateChordRegister() {
 
 void updateGetData() {
   // Return json
-  String str = "{\"temperature\": \"%f\", \"light\": \"%d\"}";
+  #ifdef DHT
+  String str = "{\"ponystring\": \"моя маленькая пони\", \"temperature\": \"%f\", \"light\": \"%d\", \"temperature2\": \"%d\", \"humidity\": \"%d\"}";
+  sprintf(getData, str.c_str(), temperature, light, temperatureFromDht, humidity);
+  #else
+  String str = "{\"ponystring\": \"моя маленькая пони\", \"temperature\": \"%f\", \"light\": \"%d\"}";
   sprintf(getData, str.c_str(), temperature, light);
+  #endif
 }
