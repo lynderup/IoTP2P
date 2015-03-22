@@ -10,8 +10,7 @@ var Application = function(node) {
 
     db.serialize(function() {
         db.run('CREATE TABLE temperature (temperature DECIMAL, light INTEGER, time DATE);');
-    })
-    
+    });
 
     this.addSource = function(source) {
         source.data = [];
@@ -47,12 +46,13 @@ var Application = function(node) {
                     }).on('error', function(e) {});
                 }
             }
-        }
+        };
+
         visit(0);
         updateDataTimer = setTimeout(updateData, 1000);
     };
     updateData();
-    
+
     this.close = function() {
         clearTimeout(updateDataTimer);
         db.close();
@@ -70,9 +70,9 @@ var Application = function(node) {
             });
             res.on('end', function() {
                 if(res.statusCode == 200) {
-                    console.log(recievedData)
+                    console.log(recievedData);
                     var data = JSON.parse(JSON.parse(recievedData).result);
-                    var key = parseInt(data.key)
+                    var key = parseInt(data.key);
                     if(key) {
                         if (localNode.in_interval(key, localNode.predecessor.key, localNode.key)) {
                             thisApp.addSource(data);
@@ -92,7 +92,6 @@ var Application = function(node) {
             //logger.log("App not found");
         });
     };
-    
 };
 
-exports.Application = Application
+exports.Application = Application;

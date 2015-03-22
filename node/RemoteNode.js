@@ -3,7 +3,6 @@ var qs = require('querystring');
 
 // TODO Handle callback structure!!!
 var requestTemplate = function(fun, data, method, ip, port, callback) {
-    
     var params = "";
     if (method == "GET") {
         params = "?"+qs.stringify(data);
@@ -44,10 +43,9 @@ var requestTemplate = function(fun, data, method, ip, port, callback) {
                    });
     req.on('error', function(e) {
         callback(null, e);
-    })
+    });
 
     if (method == "POST") {
-
         // post the data
         req.write(post_data);
     }
@@ -62,12 +60,12 @@ var Node = function(ip, port, key) {
     this.get_successor = function(callback) {
         requestTemplate("get_successor", {},
                         "GET", ip, port, augmentCallbackToCreateNode(callback));
-    }
+    };
 
     this.get_predecessor = function(callback) {
         requestTemplate("get_predecessor", {},
                         "GET", ip, port, augmentCallbackToCreateNode(callback));
-    }
+    };
 
     this.find_successor = function(id, callback) {
         requestTemplate("find_successor", {id: id},
@@ -111,7 +109,7 @@ var Node = function(ip, port, key) {
     this.addSource = function(source, callback) {
         requestTemplate("addSource", source, "POST", ip, port, callback);
     };
-}
+};
 var dummy = new Node("127.0.0.1","4321","42");
 
 var augmentCallbackToCreateNode = function(callback) {
@@ -121,7 +119,7 @@ var augmentCallbackToCreateNode = function(callback) {
         } else {
             callback(null, err);
         }
-    }
+    };
 }
 
 var nodeToSimple = function(node) {

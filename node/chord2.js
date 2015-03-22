@@ -63,30 +63,26 @@ var Chord = function (ip, port, key, m, k, logger) {
         }
     };
 
-    
+
     this.closest_preceding_finger = function(id) {
         for (var i = thisNode.fingers.length - 1; i >= 0; --i) {
-            
             var node = thisNode.fingers[i];
             if (node && thisNode.in_interval(node.key, thisNode.key, id) && node.key != id) {
-
                 return node;
             }
         }
-        
         return thisNode;
     };
-     
 
     this.join = function(node) {
         if (node) {
             logger.log("join with " + node.key);
-            thisNode.init(node)
+            thisNode.init(node);
 	    // move keys in (predecessor, node] from successor
         } else {
             logger.log("Starting new Chord ring");
             //thisNode.successor = thisNode;
-            thisNode.fingers[0] = thisNode
+            thisNode.fingers[0] = thisNode;
 	    thisNode.predecessor = thisNode;
             thisNode.stabilize();
             thisNode.fix_fingers();
@@ -155,7 +151,7 @@ var Chord = function (ip, port, key, m, k, logger) {
                     //Chord.predecessor
                 } else {
                     //Something wrong with predecessor
-                    logger.log("Error - predecessor gone")
+                    logger.log("Error - predecessor gone");
                     thisNode.predecessor = thisNode.fingers[0];
                 }
             });
@@ -217,7 +213,7 @@ var ChordProxy = function(node) {
             port: node.port,
             key: node.key
         };
-    }
+    };
 
     this.get_successor = function(data, callback) {
         node.get_successor(function(node) {
@@ -274,7 +270,7 @@ var ChordProxy = function(node) {
                 fingers[i] = null;
             }
         }
-        callback(fingers)
+        callback(fingers);
     };
 };
 

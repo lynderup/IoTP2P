@@ -8,50 +8,50 @@ var route = function(pathname, handlers, data, callback) {
     if (service && service === "favicon.ico") {
         result = { status: 404, message: "No favicon", data: {} };
     };
-    
+
     if (service === "index.html" || service === "") {
 	result.status = 200;
-	
+
 	fs.readFile("./html/index.html", function(err, html){
 	    if(err){
 		throw err;
 	    }
 	    result.contentType = "text/html";
-	    result.data = html;		
+	    result.data = html;
 	    callback(result);
-	})
+	});
 
         return;
     };
 
     if (service === "index.js") {
 	result.status = 200;
-	
+
 	fs.readFile("./html/index.js", function(err, js){
 	    if(err){
 		throw err;
 	    }
 	    result.contentType = "text/javascript";
-	    result.data = js;		
+	    result.data = js;
 	    callback(result);
-	})
+	});
 
-        return;        
+        return;
     };
 
     if (service === "style.css") {
 	result.status = 200;
-	
+
 	fs.readFile("./html/style.css", function(err, css){
 	    if(err){
 		throw err;
 	    }
 	    result.contentType = "text/css";
-	    result.data = css;		
+	    result.data = css;
 	    callback(result);
-	})
+	});
 
-        return;        
+        return;
     };
 
     // Handle requests of our type
@@ -80,7 +80,7 @@ var route = function(pathname, handlers, data, callback) {
                         result.contentType = "application/json";
 
                         callback(result);
-                    })
+                    });
                     funImpl.apply(service, params);
                 } else {
                     result.status = 404;
